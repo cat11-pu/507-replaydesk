@@ -1,0 +1,159 @@
+/**
+ * Transaction Tracker
+ * Tracks all user transactions across the platform for display in Recent Transactions
+ */
+
+import { logger } from '@/lib/utils/logger';
+
+export interface TrackedTransaction {
+  hash: string;
+  type: 'swap' | 'deposit' | 'withdraw' | 'approve' | 'transfer' | 'hedge' | 'portfolio' | 'wrap' | 'unwrap' | 'unknown';
+  status: 'success' | 'pending' | 'failed';
+  timestamp: number;
+  from: string;
+  to: string;
+  value: string;
+  tokenSymbol?: string;
+  amountIn?: string;
+  amountOut?: string;
+  tokenIn?: string;
+  tokenOut?: string;
+  description?: string;
+  blockNumber?: number;
+}
+
+const STORAGE_KEY = 'recent-transactions';
+const MAX_STORED_TXS = 100;
+
+/**
+ * Track a new transaction
+ */
+export function trackTransaction(tx: TrackedTransaction): void {
+  try {
+    const existing = getTrackedTransactions();
+    
+    // Check if transaction already exists
+    const existingIndex = existing.findIndex(t => t.hash === tx.hash);
+    if (existingIndex >= 0) {
+      // Update existing transaction (useful for status changes)
+      existing[existingIndex] = { ...existing[existingIndex], ...tx };
+    } else {
+      // Add new transaction
+      existing.unshift(tx); // Add to beginning (most recent first)
+    }
+    
+    // Keep only recent transactions
+    const trimmed = existing.slice(0, MAX_STORED_TXS);
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+    
+    // Trigger storage event for other tabs/components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: STORAGE_KEY,
+      newValue: JSON.stringify(trimmed),
+      storageArea: localStorage,
+    }));
+    
+    logger.debug('Tracked transaction', { component: 'TxTracker', data: { hash: tx.hash, type: tx.type } });
+  } catch (error) {
+    logger.error('Failed to track transaction', error, { component: 'TxTracker' });
+  }
+}
+
+/**
+ * Get all tracked transactions
+ */
+export function getTrackedTransactions(): TrackedTransaction[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return [];
+    
+    const txs = JSON.parse(stored) as TrackedTransaction[];
+    return Array.isArray(txs) ? txs : [];
+  } catch (error) {
+    logger.error('Failed to read transactions', error, { component: 'TxTracker' });
+    return [];
+  }
+}
+
+/**
+ * Update transaction status (e.g., pending -> success)
+ */
+export function updateTransactionStatus(
+  hash: string,
+  status: TrackedTransaction['status'],
+  blockNumber?: number
+): void {
+  try {
+    const existing = getTrackedTransactions();
+    const index = existing.findIndex(t => t.hash === hash);
+    
+    if (index >= 0) {
+      existing[index].status = status;
+      if (blockNumber) existing[index].blockNumber = blockNumber;
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+      
+      logger.debug('Updated transaction status', { component: 'TxTracker', data: { hash, status } });
+    }
+  } catch (error) {
+    logger.error('Failed to update transaction', error, { component: 'TxTracker' });
+  }
+}
+
+/**
+ * Clear all tracked transactions
+ */
+export function clearTrackedTransactions(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    logger.debug('Cleared all transactions', { component: 'TxTracker' });
+  } catch (error) {
+    logger.error('Failed to clear transactions', error, { component: 'TxTracker' });
+  }
+}
+
+/**
+ * Helper to track a pending transaction
+ */
+export function trackPendingTransaction(params: {
+  hash: string;
+  type: TrackedTransaction['type'];
+  from: string;
+  to: string;
+  value?: string;
+  tokenSymbol?: string;
+  description?: string;
+}): void {
+  trackTransaction({
+    ...params,
+    value: params.value || '0',
+    status: 'pending',
+    timestamp: Date.now(),
+  });
+}
+
+/**
+ * Helper to track a successful transaction
+ */
+export function trackSuccessfulTransaction(params: {
+  hash: string;
+  type: TrackedTransaction['type'];
+  from: string;
+  to: string;
+  value?: string;
+  tokenSymbol?: string;
+  tokenIn?: string;
+  tokenOut?: string;
+  amountIn?: string;
+  amountOut?: string;
+  description?: string;
+  blockNumber?: number;
+}): void {
+  trackTransaction({
+    ...params,
+    value: params.value || '0',
+    status: 'success',
+    timestamp: Date.now(),
+  });
+}

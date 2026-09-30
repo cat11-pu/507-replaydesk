@@ -1,0 +1,560 @@
+/**
+ * Live agent status chat — asks the ZKward status oracle (ASI + tools).
+ * Read-only. Grounds every answer in live DB state via 6 agent tools.
+ */
+'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
+import { Send, Bot, User, Loader2, Wrench, AlertCircle, ChevronDown } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ThinkingIndicator } from '@/components/chat/ThinkingIndicator';
+
+interface ToolCall {
+  tool: string;
+  ok: boolean;
+  latencyMs: number;
+  argsPreview?: string;
+  pending?: boolean;
+}
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  toolCalls?: ToolCall[];
+  elapsedMs?: number;
+  error?: boolean;
+  streaming?: boolean;
+  rateLimited?: boolean;
+}
+
+// Prompt IDs — labels come from translations via t(`prompts.${id}`).
+const PROMPT_IDS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'] as const;
+
+// Client-side chat persistence. Versioned key so schema evolution
+// doesn't break existing users. Cap at HISTORY_LIMIT so localStorage
+// stays bounded (rough size: 50 messages × ~2 KB avg = 100 KB, well
+// under the ~5 MB per-origin quota). Streaming state is stripped
+// before persisting — half-written messages don't survive reloads.
+const STORAGE_KEY = 'zkward-chat-history-v1';
+const SESSION_KEY = 'zkward-chat-session-v1';
+const HISTORY_LIMIT = 50;
+
+// Session ID — UUID stored in localStorage, sent with every request so the
+// server can log to ai_chat_logs and (in a follow-up PR) retrieve prior
+// context for the same session. Clearing browser data resets the session.
+function loadOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    const existing = window.localStorage.getItem(SESSION_KEY);
+    if (existing && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(existing)) {
+      return existing;
+    }
+  } catch { /* no-op */ }
+  const fresh = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    // Fallback for very old browsers — not crypto-secure but sufficient for a session tag
+    : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}-4${Math.random().toString(16).slice(2, 5)}-8${Math.random().toString(16).slice(2, 5)}-${Math.random().toString(16).slice(2, 14).padEnd(12, '0')}`;
+  try { window.localStorage.setItem(SESSION_KEY, fresh); } catch { /* no-op */ }
+  return fresh;
+}
+
+function loadHistory(): Message[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Basic shape validation — reject anything not matching Message
+    return parsed.filter((m: unknown): m is Message => {
+      return !!m && typeof m === 'object'
+        && typeof (m as Message).id === 'string'
+        && ((m as Message).role === 'user' || (m as Message).role === 'assistant')
+        && typeof (m as Message).content === 'string';
+    }).map((m) => ({ ...m, streaming: false, error: !!m.error }));
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(messages: Message[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    // Strip transient state, drop errored/empty entries, cap size
+    const clean = messages
+      .filter((m) => m.content && !m.rateLimited)
+      .map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        toolCalls: m.toolCalls?.map(({ pending: _p, ...tc }) => tc),
+        elapsedMs: m.elapsedMs,
+        error: m.error,
+      }))
+      .slice(-HISTORY_LIMIT);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+  } catch {
+    // Storage quota / disabled — silently drop persistence
+  }
+}
+
+function AssistantMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        h1: ({ children }) => <h1 className="text-title-3 font-semibold text-label-primary mt-4 mb-2 first:mt-0">{children}</h1>,
+        h2: ({ children }) => <h2 className="text-headline font-semibold text-label-primary mt-3 mb-2 first:mt-0">{children}</h2>,
+        h3: ({ children }) => <h3 className="text-callout font-semibold text-label-primary mt-3 mb-1.5 first:mt-0">{children}</h3>,
+        h4: ({ children }) => <h4 className="text-footnote font-semibold text-label-secondary mt-2 mb-1 first:mt-0">{children}</h4>,
+        p: ({ children }) => <p className="text-body text-label-primary leading-relaxed mb-2 last:mb-0">{children}</p>,
+        strong: ({ children }) => <strong className="font-semibold text-label-primary">{children}</strong>,
+        em: ({ children }) => <em className="text-label-secondary italic">{children}</em>,
+        ul: ({ children }) => <ul className="list-disc pl-5 mb-2 last:mb-0 space-y-1 text-body text-label-primary">{children}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-5 mb-2 last:mb-0 space-y-1 text-body text-label-primary">{children}</ol>,
+        li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+        code: ({ className, children }) => {
+          if (!className) {
+            return <code className="px-1.5 py-0.5 rounded bg-system-bg-tertiary text-caption-1 font-mono text-ios-blue">{children}</code>;
+          }
+          return <code className={className}>{children}</code>;
+        },
+        pre: ({ children }) => <pre className="my-2 p-3 rounded-ios bg-system-bg-tertiary border border-separator-opaque/40 overflow-x-auto text-caption-1 font-mono">{children}</pre>,
+        table: ({ children }) => (
+          <div className="overflow-x-auto my-3 rounded-ios border border-separator-opaque/40">
+            <table className="min-w-full text-caption-1">{children}</table>
+          </div>
+        ),
+        thead: ({ children }) => <thead className="bg-system-bg-secondary">{children}</thead>,
+        tbody: ({ children }) => <tbody className="divide-y divide-separator-opaque/40 bg-system-bg-primary">{children}</tbody>,
+        tr: ({ children }) => <tr>{children}</tr>,
+        th: ({ children }) => <th className="px-3 py-1.5 text-left font-semibold text-label-primary whitespace-nowrap">{children}</th>,
+        td: ({ children }) => <td className="px-3 py-1.5 text-label-primary">{children}</td>,
+        blockquote: ({ children }) => <blockquote className="border-l-2 border-ios-blue pl-3 my-2 italic text-label-secondary">{children}</blockquote>,
+        hr: () => <hr className="my-3 border-separator-opaque/40" />,
+        a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-ios-blue underline underline-offset-2 hover:opacity-80">{children}</a>,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
+export function AgentLiveChat() {
+  const t = useTranslations('agentsPage.chat');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+  const [input, setInput] = useState('');
+  const [pending, setPending] = useState(false);
+  const [ready, setReady] = useState<boolean | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    fetch('/api/agents/live-chat')
+      .then(r => r.json())
+      .then(j => setReady(!!j.ready))
+      .catch(() => setReady(false));
+  }, []);
+
+  // Hydrate history from localStorage on mount. Runs once, marks hydrated
+  // so the persist-effect below doesn't wipe existing storage with an
+  // empty `messages` array before load.
+  useEffect(() => {
+    setMessages(loadHistory());
+    setHydrated(true);
+  }, []);
+
+  // Persist history whenever messages change (post-hydration). Skipping
+  // streaming messages entirely — they persist once complete.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (messages.some((m) => m.streaming)) return;
+    saveHistory(messages);
+  }, [messages, hydrated]);
+
+  const sessionIdRef = useRef<string>('');
+  useEffect(() => { sessionIdRef.current = loadOrCreateSessionId(); }, []);
+
+  const clearHistory = useCallback(() => {
+    setMessages([]);
+    if (typeof window !== 'undefined') {
+      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
+      // Note: keep the session_id so server-side context (ai_chat_logs)
+      // can still be recalled if the user asks a follow-up. Only the
+      // client-visible history is cleared.
+    }
+  }, []);
+
+  /**
+   * True fresh start — rotate the sessionId AND wipe visible history.
+   * Server-side memory (ai_chat_logs) is by session, so a new UUID
+   * means the LLM starts with zero cross-session context. Follow-up
+   * questions WITHIN this new session still work as normal via server
+   * memory retrieval. Distinct from clearHistory() which only wipes
+   * the UI while keeping the persistent server context.
+   */
+  const startNewChat = useCallback(() => {
+    setMessages([]);
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(STORAGE_KEY);
+        window.localStorage.removeItem(SESSION_KEY);
+      } catch { /* no-op */ }
+    }
+    // Generate fresh session — same logic as loadOrCreateSessionId but forced
+    const fresh = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}-4${Math.random().toString(16).slice(2, 5)}-8${Math.random().toString(16).slice(2, 5)}-${Math.random().toString(16).slice(2, 14).padEnd(12, '0')}`;
+    sessionIdRef.current = fresh;
+    if (typeof window !== 'undefined') {
+      try { window.localStorage.setItem(SESSION_KEY, fresh); } catch { /* no-op */ }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, pending]);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 180) + 'px';
+  }, [input]);
+
+  const send = useCallback(async (raw: string) => {
+    const text = raw.trim();
+    if (!text || pending) return;
+    const userId = `u-${Date.now()}`;
+    const assistantId = `a-${Date.now()}`;
+    let historySnapshot: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+    setMessages(m => {
+      historySnapshot = m
+        .filter(msg => !msg.error && msg.content)
+        .slice(-10)
+        .map(msg => ({ role: msg.role, content: msg.content }));
+      return [
+        ...m,
+        { id: userId, role: 'user', content: text },
+        { id: assistantId, role: 'assistant', content: '', toolCalls: [], streaming: true },
+      ];
+    });
+    setInput('');
+    setPending(true);
+
+    const patch = (updater: (msg: Message) => Message) => {
+      setMessages(m => m.map(msg => (msg.id === assistantId ? updater(msg) : msg)));
+    };
+
+    try {
+      const r = await fetch('/api/agents/live-chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: historySnapshot,
+          sessionId: sessionIdRef.current || undefined,
+        }),
+      });
+
+      if (r.status === 429) {
+        patch(msg => ({
+          ...msg,
+          content: t('rateLimited'),
+          error: true,
+          rateLimited: true,
+          streaming: false,
+        }));
+        return;
+      }
+      if (!r.ok || !r.body) {
+        patch(msg => ({
+          ...msg,
+          content: t('requestFailed', { status: r.status }),
+          error: true,
+          streaming: false,
+        }));
+        return;
+      }
+
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let nl = buffer.indexOf('\n');
+        while (nl >= 0) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          nl = buffer.indexOf('\n');
+          if (!line) continue;
+          let event: {
+            type: string;
+            delta?: string;
+            tool?: string;
+            ok?: boolean;
+            latencyMs?: number;
+            argsPreview?: string;
+            error?: string;
+            elapsedMs?: number;
+            message?: string;
+          };
+          try {
+            event = JSON.parse(line);
+          } catch {
+            continue;
+          }
+          if (event.type === 'token' && typeof event.delta === 'string') {
+            const delta = event.delta;
+            patch(msg => ({ ...msg, content: msg.content + delta }));
+          } else if (event.type === 'tool_start' && event.tool) {
+            const tool = event.tool;
+            const argsPreview = event.argsPreview || '';
+            patch(msg => ({
+              ...msg,
+              toolCalls: [
+                ...(msg.toolCalls || []),
+                { tool, ok: false, latencyMs: 0, argsPreview, pending: true } as ToolCall & { pending?: boolean },
+              ],
+            }));
+          } else if (event.type === 'tool_end' && event.tool) {
+            const tool = event.tool;
+            const ok = !!event.ok;
+            const latencyMs = event.latencyMs ?? 0;
+            patch(msg => {
+              const list = [...(msg.toolCalls || [])];
+              const idx = list.findIndex(
+                (t) => t.tool === tool && (t as ToolCall & { pending?: boolean }).pending,
+              );
+              if (idx >= 0) {
+                const prev = list[idx] as ToolCall & { pending?: boolean };
+                list[idx] = { ...prev, ok, latencyMs, pending: false };
+              } else {
+                list.push({ tool, ok, latencyMs, argsPreview: '' });
+              }
+              return { ...msg, toolCalls: list };
+            });
+          } else if (event.type === 'done') {
+            patch(msg => ({ ...msg, elapsedMs: event.elapsedMs, streaming: false }));
+          } else if (event.type === 'error') {
+            const errMessage = event.message || 'stream error';
+            patch(msg => ({
+              ...msg,
+              content: msg.content || errMessage,
+              error: true,
+              streaming: false,
+            }));
+          }
+        }
+      }
+    } catch (e) {
+      patch(msg => ({
+        ...msg,
+        content: e instanceof Error ? e.message : t('networkError'),
+        error: true,
+        streaming: false,
+      }));
+    } finally {
+      setPending(false);
+      // A stream can terminate with zero tokens and no error event (seen
+      // when a request straddles a production deploy swap). Without this
+      // guard the assistant bubble sits silently EMPTY — looks like the
+      // bot ignored the user. Surface it as a retryable error instead.
+      patch(msg => {
+        const next = msg.streaming ? { ...msg, streaming: false } : msg;
+        if (!next.content && !next.error) {
+          return { ...next, content: t('emptyResponse'), error: true, streaming: false };
+        }
+        return next;
+      });
+    }
+  }, [pending, t]);
+
+  if (ready === false) {
+    return (
+      <div className="bg-system-bg-secondary rounded-ios-xl p-6 border border-separator-opaque/40 text-center">
+        <AlertCircle className="w-6 h-6 text-ios-orange mx-auto mb-2" />
+        <p className="text-callout text-label-secondary">
+          {t('notConfigured')}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    // Responsive height: 65vh on phones (leaves room for on-screen
+    // keyboard + navbar), scales up to 720px on desktop. Also honors
+    // the small-viewport-height (svh) unit where supported so mobile
+    // browsers with URL bar collapse behavior don't cause layout jump.
+    <div
+      className="bg-system-bg-primary rounded-ios-xl border border-separator-opaque/40 shadow-ios-1 overflow-hidden flex flex-col
+                 h-[min(65svh,560px)] sm:h-[min(75vh,680px)] lg:h-[min(80vh,720px)]
+                 min-h-[360px] w-full max-w-full"
+    >
+      <div className="border-b border-separator-opaque/40 px-3.5 sm:px-6 py-2.5 sm:py-3.5 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <Bot className="w-4 h-4 text-ios-blue flex-shrink-0" />
+          <h3 className="text-callout sm:text-headline font-semibold text-label-primary truncate">{t('title')}</h3>
+          <span className="ml-auto text-caption-2 text-label-tertiary hidden sm:inline flex-shrink-0">
+            {t('readOnly')}
+          </span>
+          {messages.length > 0 && (
+            <>
+              <button
+                onClick={startNewChat}
+                className="text-caption-2 text-ios-blue hover:opacity-80 transition-opacity px-2 py-1 rounded font-medium"
+                title={t('newChatTooltip')}
+              >
+                {t('newChat')}
+              </button>
+              <button
+                onClick={clearHistory}
+                className="text-caption-2 text-label-tertiary hover:text-label-primary transition-colors px-2 py-1 rounded"
+                title={t('clearHistory')}
+              >
+                {t('clear')}
+              </button>
+            </>
+          )}
+        </div>
+        <p className="text-caption-1 sm:text-footnote text-label-tertiary mt-1">
+          {t('subtitle')}
+        </p>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-3.5 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4">
+        {messages.length === 0 && (
+          <div className="space-y-3">
+            <p className="text-callout text-label-tertiary">{t('tryOneOfThese')}</p>
+            <div className="flex flex-wrap gap-2">
+              {PROMPT_IDS.map(id => {
+                const label = t(`prompts.${id}`);
+                return (
+                  <button
+                    key={id}
+                    onClick={() => send(label)}
+                    disabled={pending}
+                    className="text-footnote px-3 py-1.5 rounded-full bg-system-bg-secondary border border-separator-opaque/40 text-label-secondary hover:text-label-primary hover:border-ios-blue/50 transition-colors disabled:opacity-50"
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {messages.map(m => (
+          <div key={m.id} className={`flex gap-2 sm:gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+            <div
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-ios flex items-center justify-center flex-shrink-0 ${
+                m.role === 'user'
+                  ? 'bg-ios-blue/10 text-ios-blue'
+                  : m.error
+                  ? 'bg-ios-red/10 text-red-700'
+                  : 'bg-ios-green/10 text-ios-green'
+              }`}
+            >
+              {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+            </div>
+            <div className={`min-w-0 max-w-[calc(100%-2.75rem)] sm:max-w-[calc(100%-3rem)] ${m.role === 'user' ? 'flex flex-col items-end' : 'flex-1'}`}>
+              <div
+                className={`px-3.5 py-2.5 rounded-ios ${
+                  m.role === 'user'
+                    ? 'inline-block max-w-full bg-ios-blue text-white text-body whitespace-pre-wrap break-words'
+                    : m.error
+                    ? `inline-block max-w-full ${m.rateLimited ? 'bg-ios-orange/10 text-orange-700' : 'bg-ios-red/10 text-red-700'} text-body whitespace-pre-wrap break-words`
+                    : 'w-full bg-system-bg-secondary text-label-primary break-words'
+                }`}
+              >
+                {m.role === 'assistant' && !m.error ? (
+                  <>
+                    {m.content ? <AssistantMarkdown content={m.content} /> : null}
+                    {m.streaming && !m.content && (
+                      <ThinkingIndicator phases={[t('thinking').replace(/[…\.]+$/, ''), 'Checking signals', 'Consulting sources', 'Cross-referencing']} />
+                    )}
+                    {m.streaming && m.content && (
+                      <span className="inline-block w-2 h-4 bg-ios-blue ml-0.5 align-middle animate-pulse" />
+                    )}
+                  </>
+                ) : (
+                  m.content
+                )}
+              </div>
+              {m.toolCalls && m.toolCalls.length > 0 && (
+                <details className="mt-2 text-caption-1 text-label-tertiary group" open={m.streaming}>
+                  <summary className="inline-flex items-center gap-1 cursor-pointer hover:text-label-secondary select-none list-none">
+                    <Wrench className="w-3 h-3" />
+                    <span>
+                      {t('toolCalls', { count: m.toolCalls.length })}
+                      {m.elapsedMs ? ` · ${m.elapsedMs}ms` : ''}
+                    </span>
+                    <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 pl-4">
+                    {m.toolCalls.map((t, i) => (
+                      <span
+                        key={i}
+                        className={`inline-flex items-center gap-1 font-mono ${
+                          t.pending ? 'text-label-tertiary' : t.ok ? 'text-ios-green' : 'text-red-700'
+                        }`}
+                      >
+                        {t.pending && <Loader2 className="w-3 h-3 animate-spin" />}
+                        {t.tool}
+                        {t.pending ? '...' : `(${t.ok ? 'ok' : 'err'}) ${t.latencyMs}ms`}
+                      </span>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          send(input);
+        }}
+        className="border-t border-separator-opaque/40 px-3.5 sm:px-6 py-3 sm:py-4 flex gap-2.5 sm:gap-3 items-end flex-shrink-0 bg-system-bg-primary pb-safe"
+      >
+        <textarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              send(input);
+            }
+          }}
+          rows={1}
+          placeholder={t('placeholder')}
+          disabled={pending || ready !== true}
+          // Use 16px base font-size on mobile so iOS Safari doesn't
+          // auto-zoom the viewport when the textarea focuses. Anything
+          // below 16px triggers the zoom, breaking layout on the
+          // return-to-normal.
+          className="flex-1 min-w-0 px-3.5 py-2.5 rounded-ios bg-system-bg-secondary text-label-primary placeholder-label-tertiary border border-separator-opaque/40 focus:border-ios-blue focus:outline-none text-[16px] sm:text-body disabled:opacity-50 resize-none max-h-[140px] sm:max-h-[180px] min-h-[42px] leading-snug"
+        />
+        <button
+          type="submit"
+          disabled={pending || !input.trim() || ready !== true}
+          className="px-4 sm:px-5 py-3 rounded-ios bg-ios-blue text-white font-medium text-callout disabled:opacity-40 disabled:cursor-not-allowed hover:bg-ios-blue/90 transition-colors flex items-center gap-1.5 sm:gap-2 flex-shrink-0"
+          aria-label={t('sendAria')}
+        >
+          {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          <span className="hidden sm:inline">{pending ? t('sending') : t('send')}</span>
+        </button>
+      </form>
+    </div>
+  );
+}

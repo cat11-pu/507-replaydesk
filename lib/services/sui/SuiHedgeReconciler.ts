@@ -1,0 +1,472 @@
+/**
+ * SuiHedgeReconciler
+ * --------------------------------------------------------------------------
+ * Two-way reconciliation between SUI on-chain pool state and the Postgres
+ * `hedges` table.
+ *
+ * The SUI USDC pool's Move contract holds active hedges in
+ * `pool.hedge_state.active_hedges` (vector<HedgePosition>). These positions
+ * include both:
+ *   1. Real risk hedges opened by the auto-hedge agent
+ *   2. Operational $0.01 "rebalance" hedges used by the cron to transfer
+ *      USDC from the pool capability to the admin wallet for DEX swaps
+ *
+ * Until now the DB `hedges` table was BlueFin-perp-only. This reconciler
+ * mirrors all on-chain HedgePosition objects into the DB so analytics, P&L
+ * tracking, and the UI's historical views reflect the source of truth.
+ *
+ * Algorithm:
+ *   1. Read on-chain active_hedges via SUI RPC sui_getObject
+ *   2. Load DB hedges where chain='sui' AND status='active'
+ *   3. INSERT any on-chain hedge missing from DB (keyed by hedge_id_onchain)
+ *   4. UPDATE status='closed' for any DB row with chain='sui' status='active'
+ *      whose hedge_id_onchain is no longer present on-chain
+ *
+ * Idempotent and safe to run repeatedly.
+ */
+
+import { query } from '@/lib/db/postgres';
+import {
+  ensureHedgesTable,
+  createHedge,
+  closeHedge,
+  closeHedgeByOnchainId,
+  type Hedge,
+} from '@/lib/db/hedges';
+import { env, envFirst } from '@/lib/utils/env';
+import { estimateHedgePnl, roundPnl8 } from '@/lib/services/sui/hedge-pnl';
+import { logger } from '@/lib/utils/logger';
+import { SUI_COMMUNITY_POOL_PORTFOLIO_ID } from '@/lib/constants';
+
+const SUI_PAIR_INDEX_TO_ASSET: Record<number, string> = {
+  0: 'BTC',
+  1: 'ETH',
+  2: 'SUI',
+  3: 'CRO',
+};
+
+interface OnChainHedge {
+  hedgeIdOnchain: string;
+  asset: string;
+  side: 'LONG' | 'SHORT';
+  collateralUsdc: number;
+  leverage: number;
+  notionalValue: number;
+  openTimeMs: number;
+  reason: string;
+  pairIndex: number;
+}
+
+export interface ReconcileResult {
+  onChainCount: number;
+  dbCount: number;
+  inserted: number;
+  closed: number;
+  unchanged: number;
+  errors: string[];
+}
+
+/**
+ * Read pool.hedge_state.active_hedges from on-chain via SUI RPC.
+ */
+async function readOnChainHedges(): Promise<OnChainHedge[]> {
+  const poolStateId = envFirst([
+    'NEXT_PUBLIC_SUI_MAINNET_USDC_POOL_STATE',
+    'NEXT_PUBLIC_SUI_USDC_POOL_STATE',
+    'NEXT_PUBLIC_SUI_POOL_STATE_ID',
+  ]);
+  if (!poolStateId) {
+    throw new Error('No SUI pool state ID configured');
+  }
+
+  // Failover transport handles all RPC provider selection + rotation
+  // internally; NEXT_PUBLIC_SUI_RPC_URL is no longer read here (the
+  // hardcoded default was the dead sui.io fullnode, see memory
+  // `project_sui_public_rpc_dead_2026_07_29`).
+  const network = (process.env.SUI_NETWORK || 'mainnet').trim() as 'mainnet' | 'testnet';
+  const { createFailoverSuiClient } = await import('@/lib/services/sui/sui-failover-transport');
+  const client = createFailoverSuiClient(network);
+  const objectPromise = client.getObject({
+    id: poolStateId,
+    options: { showContent: true, showType: true },
+  });
+  const timeoutPromise = new Promise<null>((resolve) =>
+    setTimeout(() => resolve(null), 10_000),
+  );
+  const res = await Promise.race([objectPromise, timeoutPromise]);
+  if (!res) throw new Error('SUI RPC timed out');
+  const content = res.data?.content as { fields?: Record<string, unknown> } | null | undefined;
+  const fields = content?.fields;
+  if (!fields) return [];
+
+  const hedgeState = (fields.hedge_state as { fields?: Record<string, unknown> })?.fields || {};
+  const activeHedges = Array.isArray(hedgeState.active_hedges)
+    ? (hedgeState.active_hedges as Array<{ fields?: Record<string, unknown> }>)
+    : [];
+
+  return activeHedges
+    .map((h): OnChainHedge | null => {
+      const f = h?.fields || {};
+      const hedgeIdBytes = Array.isArray(f.hedge_id) ? (f.hedge_id as number[]) : [];
+      if (hedgeIdBytes.length === 0) return null;
+
+      const hedgeIdOnchain =
+        '0x' + hedgeIdBytes.map((b) => Number(b).toString(16).padStart(2, '0')).join('');
+
+      const pairIndex = Number(f.pair_index ?? 0);
+      const asset = SUI_PAIR_INDEX_TO_ASSET[pairIndex] || `PAIR_${pairIndex}`;
+      const isLong = Boolean(f.is_long);
+      const collateralUsdc = Number(f.collateral_usdc || 0) / 1e6;
+      const leverage = Math.max(1, Number(f.leverage || 1));
+
+      const reasonBytes = Array.isArray(f.reason_hash) ? (f.reason_hash as number[]) : [];
+      const reason =
+        reasonBytes.length > 0
+          ? '0x' + reasonBytes.map((b) => Number(b).toString(16).padStart(2, '0')).join('')
+          : 'on-chain hedge (reason_hash absent)';
+
+      return {
+        hedgeIdOnchain,
+        asset,
+        side: isLong ? 'LONG' : 'SHORT',
+        collateralUsdc,
+        leverage,
+        notionalValue: collateralUsdc * leverage,
+        openTimeMs: Number(f.open_time || 0),
+        reason,
+        pairIndex,
+      };
+    })
+    .filter((h): h is OnChainHedge => h !== null);
+}
+
+/**
+ * Load existing DB hedges for the SUI community pool (active only).
+ * Keyed by hedge_id_onchain when present.
+ */
+async function loadDbHedges(): Promise<Map<string, Hedge>> {
+  await ensureHedgesTable();
+  const rows = await query<Hedge>(
+    `SELECT * FROM hedges
+     WHERE chain = $1 AND status = $2 AND hedge_id_onchain IS NOT NULL`,
+    ['sui', 'active'],
+  );
+  const map = new Map<string, Hedge>();
+  for (const row of rows) {
+    if (row.hedge_id_onchain) {
+      map.set(row.hedge_id_onchain.toLowerCase(), row);
+    }
+  }
+  return map;
+}
+
+/**
+ * Fetch live USD prices for the assets present in the on-chain hedge set.
+ * Returns a (possibly partial) map. Missing prices are non-fatal.
+ */
+async function fetchAssetPrices(assets: string[]): Promise<Record<string, number>> {
+  const out: Record<string, number> = {};
+  if (assets.length === 0) return out;
+  try {
+    const { getMarketDataService } = await import(
+      '@/lib/services/market-data/RealMarketDataService'
+    );
+    const mds = getMarketDataService();
+    await Promise.all(
+      assets.map(async (a) => {
+        try {
+          const p = await mds.getTokenPrice(a);
+          if (p?.price && p.price > 0) out[a] = p.price;
+        } catch {
+          /* missing price is non-fatal */
+        }
+      }),
+    );
+  } catch (err) {
+    logger.warn('[HedgeReconciler] Failed to load market prices', {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+  return out;
+}
+
+/**
+ * Reconcile on-chain SUI hedges into the Postgres `hedges` table.
+ * Idempotent. Returns counts of inserted/closed rows.
+ */
+export async function reconcileSuiHedges(): Promise<ReconcileResult> {
+  const result: ReconcileResult = {
+    onChainCount: 0,
+    dbCount: 0,
+    inserted: 0,
+    closed: 0,
+    unchanged: 0,
+    errors: [],
+  };
+
+  let onChain: OnChainHedge[];
+  try {
+    onChain = await readOnChainHedges();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.warn('[HedgeReconciler] Failed to read on-chain state', { error: msg });
+    result.errors.push(`onchain-read: ${msg}`);
+    return result;
+  }
+  result.onChainCount = onChain.length;
+
+  let db: Map<string, Hedge>;
+  try {
+    db = await loadDbHedges();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.warn('[HedgeReconciler] Failed to load DB state', { error: msg });
+    result.errors.push(`db-read: ${msg}`);
+    return result;
+  }
+  result.dbCount = db.size;
+
+  // Safety bail: if the on-chain read returned zero hedges but the DB still
+  // has notional-bearing active rows, treat as a likely transient RPC
+  // inconsistency (Sui RPC nodes occasionally return a successful response
+  // with no fields). Closing every DB row in that case would silently mark
+  // real hedges as exited at realized_pnl=0 (the estimator falls back to
+  // notional × pctMove with stale prices), corrupting analytics and the
+  // share-math NAV until the next reconciler tick re-opens them. Wait for
+  // the next tick instead.
+  const dbWithNotional = Array.from(db.values()).filter(
+    (h) => Number(h.notional_value ?? 0) >= 1,
+  ).length;
+  if (onChain.length === 0 && dbWithNotional > 0) {
+    const msg = `safety-bail: on-chain returned 0 hedges but DB has ${dbWithNotional} active notional-bearing hedge(s); refusing to mass-close (likely RPC inconsistency). Retry next tick.`;
+    logger.warn('[HedgeReconciler] ' + msg);
+    result.errors.push(msg);
+    return result;
+  }
+
+  const onChainIds = new Set(onChain.map((h) => h.hedgeIdOnchain.toLowerCase()));
+
+  // Prefetch prices once for all assets present on-chain AND in the DB hedge
+  // set. On-chain assets feed new inserts + live-PnL refresh; DB assets are
+  // needed to estimate realized PnL when closing a hedge whose on-chain marker
+  // has vanished (the asset may no longer be present on-chain).
+  const uniqueAssets = Array.from(
+    new Set([
+      ...onChain.map((h) => h.asset),
+      ...Array.from(db.values()).map((h) => h.asset),
+    ]),
+  );
+  const priceMap = await fetchAssetPrices(uniqueAssets);
+
+  // 1. INSERT on-chain hedges not in DB
+  for (const oc of onChain) {
+    const key = oc.hedgeIdOnchain.toLowerCase();
+    if (db.has(key)) {
+      result.unchanged++;
+      continue;
+    }
+    try {
+      // Use hedge_id_onchain as the natural key. order_id needs to be unique;
+      // derive it from the on-chain hedge id so re-runs are idempotent.
+      const orderId = `sui-onchain-${oc.hedgeIdOnchain.slice(2, 18)}`;
+
+      // Already inserted by another runner? Update portfolio_id if needed.
+      const existing = await query<{ id: number; portfolio_id: number }>(
+        'SELECT id, portfolio_id FROM hedges WHERE order_id = $1 OR hedge_id_onchain = $2 LIMIT 1',
+        [orderId, oc.hedgeIdOnchain],
+      );
+      if (existing.length > 0) {
+        // Update portfolio_id if it's wrong
+        if (existing[0].portfolio_id !== SUI_COMMUNITY_POOL_PORTFOLIO_ID) {
+          await query(
+            'UPDATE hedges SET portfolio_id = $1 WHERE id = $2',
+            [SUI_COMMUNITY_POOL_PORTFOLIO_ID, existing[0].id],
+          );
+          logger.info(`[HedgeReconciler] Updated portfolio_id for hedge ${existing[0].id} to ${SUI_COMMUNITY_POOL_PORTFOLIO_ID}`);
+        }
+        result.unchanged++;
+        continue;
+      }
+
+      const livePrice = priceMap[oc.asset] || 0;
+
+      await createHedge({
+        orderId,
+        portfolioId: SUI_COMMUNITY_POOL_PORTFOLIO_ID,
+        walletAddress: env('SUI_POOL_ADMIN_ADDRESS'),
+        asset: oc.asset,
+        market: oc.notionalValue < 1 ? 'POOL_REBALANCE' : 'BLUEFIN_PERP',
+        side: oc.side,
+        // `size` column is DECIMAL(18,8) so it preserves the true collateral.
+        size: oc.collateralUsdc,
+        // `notional_value` column is DECIMAL(18,2). Sub-cent rebalance hedges
+        // would round to 0.00 and trip downstream validators — floor at 0.01.
+        // The authoritative value is always on-chain.
+        notionalValue: Math.max(0.01, oc.notionalValue),
+        leverage: oc.leverage,
+        // Move contract doesn't store entry price; capture spot at first
+        // observation. Subsequent reconciliation cycles only update
+        // current_price so PnL anchors to discovery time.
+        entryPrice: livePrice > 0 ? livePrice : undefined,
+        simulationMode: false,
+        reason: `Reconciled from on-chain (pair_index=${oc.pairIndex}, reason_hash=${oc.reason.slice(0, 18)}...)`,
+        chain: 'sui',
+      });
+
+      // Backfill on-chain id, opened-at timestamp, and current_price.
+      await query(
+        `UPDATE hedges
+         SET hedge_id_onchain = $1,
+             on_chain = true,
+             created_at = $2,
+             current_price = $3,
+             price_source = 'reconciler',
+             price_updated_at = CURRENT_TIMESTAMP
+         WHERE order_id = $4`,
+        [
+          oc.hedgeIdOnchain,
+          oc.openTimeMs > 0 ? new Date(oc.openTimeMs) : new Date(),
+          livePrice > 0 ? livePrice : null,
+          orderId,
+        ],
+      );
+      result.inserted++;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn('[HedgeReconciler] Failed to insert on-chain hedge', {
+        hedgeId: oc.hedgeIdOnchain,
+        error: msg,
+      });
+      result.errors.push(`insert ${oc.hedgeIdOnchain}: ${msg}`);
+    }
+  }
+
+  // 2. CLOSE DB hedges no longer present on-chain.
+  //
+  // The proper close path (BluefinService.closeHedge → closePerpHedgeBySymbolSide)
+  // writes BlueFin-confirmed realized PnL. But many closes happen here instead —
+  // we only learn a hedge closed by observing its on-chain marker vanish, after
+  // the fact. Without a realized figure these rows landed at realized_pnl=0,
+  // making closed-hedge analytics under-count true performance.
+  //
+  // Estimate realized PnL from the price move using NOTIONAL (not `size`, whose
+  // unit is inconsistent across code paths): pnl = notional × pctMove × sign.
+  // Current market price is the exit proxy — accurate to within one reconcile
+  // interval of drift. Tagged `reconciler-estimate` so it's distinguishable from
+  // BlueFin-confirmed realized PnL in analytics.
+  for (const [key, dbHedge] of db.entries()) {
+    if (onChainIds.has(key)) continue;
+    try {
+      // Price fallback cascade for the close estimate:
+      // 1. Fresh price from priceMap (best — live market data)
+      // 2. `current_price` last stamped on the row by the price-refresh
+      //    block below on a previous reconcile tick (next best)
+      // 3. 0 → estimator returns 0, which was the old behavior. This is
+      //    why the 201-hedge backlog all show realized_pnl=$0: the
+      //    priceMap silently returned no entry, so we had no exit price.
+      const priceMapExit = Number(priceMap[dbHedge.asset] || 0);
+      const rowLastKnown = Number(dbHedge.current_price || 0);
+      const exit = priceMapExit > 0 ? priceMapExit : rowLastKnown;
+      // Tag provenance so the analytics can distinguish live-price closes
+      // from stored-price closes from unknowable closes.
+      const priceProvenance = priceMapExit > 0
+        ? 'reconciler-live'
+        : rowLastKnown > 0
+          ? 'reconciler-lastknown'
+          : 'reconciler-unknown';
+
+      const estPnl = estimateHedgePnl(
+        dbHedge.side,
+        Number(dbHedge.notional_value ?? 0),
+        Number(dbHedge.entry_price ?? 0),
+        exit,
+      );
+
+      if (dbHedge.hedge_id_onchain) {
+        await closeHedgeByOnchainId({
+          hedgeIdOnchain: dbHedge.hedge_id_onchain,
+          realizedPnl: estPnl,
+          status: 'closed',
+        });
+      } else {
+        await closeHedge(dbHedge.order_id, estPnl, 'closed');
+      }
+
+      // Tag every reconciler-driven close (including 0-PnL ones) so
+      // downstream analytics can bucket them separately from BlueFin-
+      // confirmed fills. Wrapped in its own try/catch: the core close
+      // above already committed, and a schema drift here (e.g. close_reason
+      // column missing on an older DB) shouldn't unwind result.closed++
+      // via the outer catch — that was booking successful closes as errors.
+      try {
+        await query(
+          `UPDATE hedges
+           SET close_reason = 'reconciler-estimate', price_source = $2
+           WHERE (hedge_id_onchain = $1 OR order_id = $1) AND close_reason IS NULL`,
+          [dbHedge.hedge_id_onchain || dbHedge.order_id, priceProvenance],
+        );
+      } catch (tagErr) {
+        logger.debug('[HedgeReconciler] close-tag write failed (non-fatal)', {
+          hedgeId: dbHedge.hedge_id_onchain || dbHedge.order_id,
+          error: tagErr instanceof Error ? tagErr.message : String(tagErr),
+        });
+      }
+
+      if (priceProvenance === 'reconciler-unknown') {
+        logger.warn('[HedgeReconciler] Closed hedge with no exit price', {
+          id: dbHedge.id,
+          asset: dbHedge.asset,
+          side: dbHedge.side,
+          notional: dbHedge.notional_value,
+        });
+      }
+      result.closed++;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn('[HedgeReconciler] Failed to close DB hedge', {
+        hedgeId: dbHedge.hedge_id_onchain,
+        error: msg,
+      });
+      result.errors.push(`close ${dbHedge.hedge_id_onchain}: ${msg}`);
+    }
+  }
+
+  // 3. Refresh live prices and PnL on still-active mirrored rows so the UI
+  // displays current numbers without waiting for a separate price-tracker job.
+  for (const [key, dbHedge] of db.entries()) {
+    if (!onChainIds.has(key)) continue;
+    const livePrice = priceMap[dbHedge.asset];
+    if (!livePrice || livePrice <= 0) continue;
+    // PnL = notional × pctMove × side-sign — see lib/services/sui/hedge-pnl.ts.
+    const pnl = estimateHedgePnl(
+      dbHedge.side,
+      Number(dbHedge.notional_value ?? 0),
+      Number(dbHedge.entry_price ?? 0),
+      livePrice,
+    );
+    try {
+      await query(
+        `UPDATE hedges
+         SET current_price = $1,
+             price_source = 'reconciler',
+             price_updated_at = CURRENT_TIMESTAMP,
+             current_pnl = $2,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $3 AND status = 'active'`,
+        [livePrice, roundPnl8(pnl), dbHedge.id],
+      );
+    } catch (err) {
+      // Non-fatal — price refresh is a best-effort enrichment
+      logger.debug('[HedgeReconciler] Price refresh failed', {
+        hedgeId: dbHedge.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  if (result.inserted > 0 || result.closed > 0) {
+    logger.info('[HedgeReconciler] Reconciled SUI hedges', result);
+  }
+
+  return result;
+}

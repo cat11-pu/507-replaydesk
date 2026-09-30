@@ -1,0 +1,16 @@
+# GitHub Funding Configuration
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+# Supported funding platforms (uncomment to enable)
+
+# GitHub Sponsors
+# github: [ZkVanguard]
+
+# Open Collective
+# open_collective: zkward
+
+# Patreon
+# patreon: zkward
+
+# Custom URLs
+# custom: ['https://zkward.io/donate', 'https://buymeacoffee.com/zkward']

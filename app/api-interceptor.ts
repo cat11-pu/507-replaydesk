@@ -1,0 +1,140 @@
+// API Interceptor to block WalletConnect Cloud 403 errors
+// This must run before any wallet initialization code
+// ⚠️ DEVELOPMENT ONLY: In production, these requests are allowed through (may fail gracefully)
+import { logger } from '../lib/utils/logger';
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+if (typeof window !== 'undefined') {
+  // Add BigInt serialization support to prevent "Invalid value" fetch errors
+  // This is needed because ethers may serialize BigInt values in error objects
+  if (!(BigInt.prototype as any).toJSON) {
+    (BigInt.prototype as any).toJSON = function() {
+      return this.toString();
+    };
+  }
+  
+  // Only intercept in development mode - production uses real responses
+  if (!IS_PRODUCTION) {
+    const blockedDomains = [
+      'api.web3modal.org',
+      'pulse.walletconnect.org',
+      'explorer-api.walletconnect.com',
+    ];
+
+    const mockResponses: Record<string, unknown> = {
+      'api.web3modal.org/appkit/v1/config': {
+        success: true,
+        data: {
+          enableAnalytics: false,
+          enableOnramp: false,
+          features: {},
+        },
+      },
+      'api.web3modal.org/getWallets': {
+        success: true,
+        data: {
+          wallets: [],
+          total: 0,
+        },
+      },
+      'pulse.walletconnect.org': {
+        success: true,
+      },
+    };
+
+  // Intercept fetch API
+  const originalFetch = window.fetch;
+  window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
+    try {
+      let url: string;
+      if (typeof input === 'string') {
+        url = input;
+      } else if (input instanceof URL) {
+        url = input.toString();
+      } else if (input instanceof Request) {
+        url = input.url;
+      } else {
+        // Unknown type, pass through to original fetch
+        return originalFetch.call(this, input, init);
+      }
+
+      // Check if URL contains any blocked domains
+      const isBlocked = blockedDomains.some((domain) => url.includes(domain));
+
+      if (isBlocked) {
+        logger.debug('[API Interceptor] Blocked request', { url });
+
+        // Find appropriate mock response
+        const mockKey = Object.keys(mockResponses).find((key) => url.includes(key));
+        const mockData = mockKey ? mockResponses[mockKey] : { success: true };
+
+        return Promise.resolve(
+          new Response(JSON.stringify(mockData), {
+            status: 200,
+            statusText: 'OK',
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+      }
+
+      // For RPC requests, wrap in try-catch to provide better error info
+      return originalFetch.call(this, input, init).catch((err: Error) => {
+        console.error('[API Interceptor] Fetch failed:', {
+          url,
+          error: err.message,
+          init: init ? { 
+            method: init.method,
+            hasBody: !!init.body,
+            bodyType: init.body ? typeof init.body : 'none',
+            headers: init.headers ? Object.fromEntries(
+              init.headers instanceof Headers 
+                ? init.headers.entries() 
+                : Object.entries(init.headers as Record<string, string>)
+            ) : 'none'
+          } : 'no init'
+        });
+        throw err;
+      });
+    } catch (err) {
+      // If anything goes wrong in our interceptor, log and fall back to original fetch
+      console.error('[API Interceptor] Error in interceptor:', err);
+      return originalFetch.call(this, input, init);
+    }
+  };
+
+  // Also intercept XMLHttpRequest for legacy code
+  const originalXHROpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function (
+    method: string,
+    url: string | URL,
+    async: boolean = true,
+    username?: string | null,
+    password?: string | null
+  ) {
+    const urlString = typeof url === 'string' ? url : url.toString();
+    const isBlocked = blockedDomains.some((domain) => urlString.includes(domain));
+
+    if (isBlocked) {
+      logger.debug('[API Interceptor] Blocked XHR request', { url: urlString });
+      // Override send to return mock data
+      this.send = function () {
+        Object.defineProperty(this, 'status', { value: 200 });
+        Object.defineProperty(this, 'readyState', { value: 4 });
+        Object.defineProperty(this, 'responseText', {
+          value: JSON.stringify({ success: true }),
+        });
+        if (this.onreadystatechange) {
+          this.onreadystatechange(new Event('readystatechange'));
+        }
+      };
+    }
+
+    return originalXHROpen.call(this, method, url, async, username, password);
+  };
+
+  logger.info('[API Interceptor] WalletConnect Cloud API blocker initialized (dev mode)');
+  } // End of !IS_PRODUCTION block
+}
+
+export {};

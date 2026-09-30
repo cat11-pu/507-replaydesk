@@ -1,0 +1,6 @@
+Contact: mailto:ashish.regmi@zkward.com
+Preferred-Languages: en
+Canonical: https://www.zkward.com/.well-known/security.txt
+Policy: https://www.zkward.com/terms
+Acknowledgments: https://github.com/ZkVanguard
+Expires: 2027-09-19T00:00:00.000Z

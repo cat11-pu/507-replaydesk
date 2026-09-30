@@ -1,0 +1,89 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ES2022"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "types": [
+      "node",
+      "jest",
+      "react",
+      "react-dom",
+      "chai",
+      "mocha"
+    ],
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@zkward/hedera-graphql-adapter": [
+        "packages/hedera-graphql-adapter/src/index.ts"
+      ],
+      "@contracts/*": [
+        "contracts/*"
+      ],
+      "@agents/*": [
+        "agents/*"
+      ],
+      "@integrations/*": [
+        "integrations/*"
+      ],
+      "@zk/*": [
+        "zk/*"
+      ],
+      "@simulator/*": [
+        "simulator/*"
+      ],
+      "@frontend/*": [
+        "frontend/src/*"
+      ],
+      "@shared/*": [
+        "shared/*"
+      ],
+      "@test/*": [
+        "test/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "cache",
+    "artifacts",
+    "typechain-types",
+    "test",
+    "scripts",
+    "archive",
+    "subgraph",
+    "packages/hedera-graphql-adapter/examples",
+    "mcp"
+  ]
+}

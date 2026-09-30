@@ -1,0 +1,92 @@
+{
+  "network": "cronos-testnet",
+  "chainId": 338,
+  "timestamp": "2025-12-15T00:09:43.005Z",
+  "deployer": "0xb9966f1007E4aD3A37D29949162d68b0dF8Eb51c",
+  "contracts": {
+    "ZKVerifier": "0x46A497cDa0e2eB61455B7cAD60940a563f3b7FD8",
+    "RWAManager": "0x170E8232E9e18eeB1839dB1d939501994f1e272F",
+    "PaymentRouter": "0xe40AbC51A100Fa19B5CddEea637647008Eb0eA0b",
+    "MockGroth16Verifier": "0x1dDb2A6b64beF9E9435be251c78C84ACaEd94953"
+  },
+  "depositToken": {
+    "description": "USDT stablecoin for Cronos testnet",
+    "address": "0x28217DAddC55e3C4831b4A48A00Ce04880786967",
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "decimals": 6,
+    "note": "Testnet USDT - For mainnet use official WDK USDT"
+  },
+  "UniversalRelayer": "0x9E5512b683d92290ccD20F483D20699658bcb9f3",
+  "GaslessZKVerifier": "0x7747e2D3e8fc092A0bd0d6060Ec8d56294A5b73F",
+  "zkCommitmentVerifier": "0x76Faf645C0B3c1e37fbf3EF189EdAfB0D4Fc2a8E",
+  "deployedAt": "2025-12-16T04:44:46.011Z",
+  "zkPaymaster": "0x81E2d8d860847Ca1b3ADd950dBeED6191be23D87",
+  "X402GaslessZKCommitmentVerifier": "0x44098d0dE36e157b4C1700B48d615285C76fdE47",
+  "usdtToken": "0x28217DAddC55e3C4831b4A48A00Ce04880786967",
+  "GaslessZKCommitmentVerifier": "0x76Faf645C0B3c1e37fbf3EF189EdAfB0D4Fc2a8E",
+  "MockMoonlander": "0xf63B712013500117c866e33194Ef5e2d327977C9",
+  "ZKHedgeCommitment": "0xa1FF9dFeB4fF9d815FDE34d5F3c61a893806A93E",
+  "lastDeployment": "2026-03-19T13:13:29.895Z",
+  "HedgeExecutor": "0x090b6221137690EbB37667E4644287487CE462B9",
+  "USDT": "0x28217DAddC55e3C4831b4A48A00Ce04880786967",
+  "HedgeExecutorV2": "0x090b6221137690EbB37667E4644287487CE462B9",
+  "lastTestTimestamp": "2026-02-08T02:42:23.819Z",
+  "testResults": {
+    "passed": 20,
+    "failed": 0
+  },
+  "demoHedges": [
+    {
+      "hedgeId": "0x4cd7e3a981fbee53a8b431a1139433969243e9fce329614d5c4b3fd45cd4e545",
+      "name": "BTC Portfolio Hedge",
+      "pair": "BTC",
+      "side": "SHORT",
+      "collateral": "500",
+      "leverage": 5,
+      "txHash": "0xc9d3df85f1efb5e0911e299519dff726e0f7c100a3a2897911024261b72b9255",
+      "reason": "Core portfolio hedge against BTC downside risk"
+    },
+    {
+      "hedgeId": "0x4dd33f8a426fa46479b5327d9b8893575f01e67996b0841a9a3673fd6ce9985f",
+      "name": "ETH DeFi Hedge",
+      "pair": "ETH",
+      "side": "SHORT",
+      "collateral": "300",
+      "leverage": 3,
+      "txHash": "0x0cde917e4ca25ea71d72c978627bdb926ba172c941028dfe6a16f59bfe453af0",
+      "reason": "DeFi exposure hedge - protecting staked ETH positions"
+    },
+    {
+      "hedgeId": "0x118cf2d42659e0a49826913e88d24a2e37bc795cafe71891d26bf0a7fcbff610",
+      "name": "CRO Ecosystem Long",
+      "pair": "CRO",
+      "side": "LONG",
+      "collateral": "200",
+      "leverage": 10,
+      "txHash": "0xb9c9a0c103c25559af53ecb4216caf62e388e6d1846b212bc71e9b0164495935",
+      "reason": "Ecosystem momentum play - CDC chain adoption thesis"
+    },
+    {
+      "hedgeId": "0xc1d4fe2cbbf66053afcd01077dd29da0f5b7d2b89c97af621e017402c33f7d1a",
+      "name": "SOL Correlation Hedge",
+      "pair": "SOL",
+      "side": "SHORT",
+      "collateral": "250",
+      "leverage": 4,
+      "txHash": "0xa69b4c338890a9699c3860760ac2c1f18b1290d705a9e5b41cc3ff9d684920a0",
+      "reason": "Alt correlation hedge - high beta downside protection"
+    },
+    {
+      "hedgeId": "0xae57d98c5f110a5fa79482da062b63748d04878e89e1b2a027ef6cac6555943a",
+      "name": "ATOM Cosmos Bet",
+      "pair": "ATOM",
+      "side": "LONG",
+      "collateral": "150",
+      "leverage": 2,
+      "txHash": "0x56689e32527cf25db28bd9e33f131a1ab6d3dff2d3fe91098e089988aa9edb03",
+      "reason": "IBC ecosystem growth play - interchain security thesis"
+    }
+  ],
+  "lastDemoTimestamp": "2026-02-08T02:50:09.576Z",
+}

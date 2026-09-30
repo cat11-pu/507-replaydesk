@@ -1,0 +1,487 @@
+# ===========================================
+# ZKVANGUARD PROJECT .GITIGNORE
+# Next.js + Hardhat + Python ZK + Bun Stack
+# ===========================================
+
+# -------------------------------------------
+# Dependencies
+# -------------------------------------------
+node_modules/
+**/node_modules/
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# -------------------------------------------
+# Package Manager Lock Files (using bun.lock)
+# -------------------------------------------
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# -------------------------------------------
+# Bun
+# -------------------------------------------
+.bun/
+*.bunx
+
+# -------------------------------------------
+# Next.js
+# -------------------------------------------
+.next/
+out/
+next-env.d.ts
+.swc/
+
+# -------------------------------------------
+# Build Outputs
+# -------------------------------------------
+dist/
+!substreams/community-pool/dist/
+build/
+*.tsbuildinfo
+build-output-local.txt
+build-result.txt
+build-error.txt
+build-output.txt
+build-now.txt
+
+# -------------------------------------------
+# Flattened Solidity & Verification Artifacts
+# -------------------------------------------
+*_flat.sol
+*-input.json
+*-metadata.json
+*_standard-input.json
+*_minimal-input.json
+
+# -------------------------------------------
+# Hardhat / Solidity / OpenZeppelin
+# -------------------------------------------
+artifacts/
+cache/
+typechain-types/
+.hardhat/
+coverage/
+coverage.json
+*.sol.js
+.openzeppelin/
+
+# -------------------------------------------
+# Deployment Records (sensitive - regenerate per deploy)
+# -------------------------------------------
+# Ignore contents by default; keep the specific reference records
+# previously committed (per-deploy artifacts stay ignored).
+deployments/*
+!deployments/community-pool-arbitrum-sepolia.json
+!deployments/community-pool-hedera-testnet.json
+!deployments/community-pool.json
+!deployments/cronos-testnet.json
+!deployments/mainnet-config.json
+!deployments/sui-mainnet-deployment.md
+!deployments/sui-testnet.json
+mainnet-deploy.json
+
+# -------------------------------------------
+# Environment Files (CRITICAL - private keys & API keys)
+# -------------------------------------------
+.env
+.env.*
+!.env.example
+
+# -------------------------------------------
+# Logs
+# -------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+bun-debug.log*
+
+# -------------------------------------------
+# Diagnostic / Debug / One-off Scripts (local only)
+# -------------------------------------------
+# All check-* and analyze-* diagnostics under scripts/ are local tools
+scripts/check-*
+scripts/analyze-*
+# Canonical diagnostics (per CLAUDE.md) — must stay tracked
+!scripts/analyze-pool-pnl.ts
+!scripts/check-hedge-signal-alignment.ts
+# Underscore-prefix scripts (scripts/_foo.ts, scripts/ai-training/_probe.py, scripts/_local/**)
+# are scratch/ephemeral, never commit. Applies to any depth under scripts/.
+scripts/_*
+scripts/**/_*
+# Same rule for one-shot admin routes / components — put under _ prefix, gitignored
+app/api/_*/**
+app/api/**/_*/**
+components/_*/**
+# MemSearch plugin state (per-machine, never commit)
+.memsearch/
+# Root-level one-off helpers
+check-old-contracts.js
+check-db.js
+check-ownership.js
+check-auto-hedge.js
+check-hedges.js
+debug-hedges.js
+fix-sui-portfolio.js
+# scripts/ one-off helpers (migration / deploy / ad-hoc tests)
+scripts/complete-migration.js
+scripts/debug-*
+scripts/fix-*
+scripts/sync-shares-*.js
+scripts/upgrade-*.js
+scripts/test-deposit.js
+scripts/test-cetus-fix.ts
+scripts/close-1550m.ts
+scripts/mint-and-prepare.ts
+scripts/deploy-mainnet-gasless.ts
+scripts/test-auto-hedging-e2e.ts
+scripts/test-vercel-auto-rebalance.ts
+scripts/test/debug-pool-state.js
+scripts/test-production-services.cjs
+scripts/test-ai-decision-data.cjs
+scripts/tests/test-ai-services-integration.ts
+scripts/test-bluefin-testnet.ts
+
+# -------------------------------------------
+# Temporary Output / Debug Files
+# -------------------------------------------
+git-status.txt
+deploy-out.txt
+deploy-v2-output.txt
+deploy-final.txt
+deploy-output.json
+deploy-to-vercel.ps1
+test-deposit-output.txt
+test-mainnet-output.txt
+test-output.txt
+tsc-output.txt
+tsc-bluefin-err.txt
+body.json
+cetus-coins.txt
+cetus-count.txt
+cetus-pools.txt
+cetus-pools2.txt
+tmp-verify-hedera.js
+set-cron-secret.js
+trace-out.txt
+cron-run-output.json
+bf-test-out*.txt
+bluefin-test-results.txt
+server-probe.txt
+sui-swap-test.txt
+env_val.tmp
+temp_env.txt
+# Accidental literal tilde folder (from mistyped `mkdir ~`)
+/~/
+
+# -------------------------------------------
+# Testing
+# -------------------------------------------
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+jest-cache/
+.jest/
+test-*.js
+!test-utils.js
+test/ZKProxyVault.test.cjs
+test/ZKProxyVault.test.js
+
+# -------------------------------------------
+# ZK Proof Artifacts
+# -------------------------------------------
+zk/build/
+zk/proving-key/
+zk/verification-key/
+zkp/__pycache__/
+zkp/**/__pycache__/
+zkp/proofs/*.json
+!zkp/proofs/.gitkeep
+*.zkey
+*.wasm
+*.ptau
+*.r1cs
+*.sym
+*.wtns
+
+# -------------------------------------------
+# Python
+# -------------------------------------------
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# -------------------------------------------
+# IDE / Editors
+# -------------------------------------------
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+*.sublime-workspace
+*.sublime-project
+
+# -------------------------------------------
+# OS Generated
+# -------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# -------------------------------------------
+# Secrets / Keys
+# -------------------------------------------
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+private-keys/
+.secret
+mnemonic.txt
+
+# -------------------------------------------
+# Vercel
+# -------------------------------------------
+.vercel/
+
+# -------------------------------------------
+# Temporary Files
+# -------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.backup
+.cache/
+tmp/
+temp*
+
+# -------------------------------------------
+# Database
+# -------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Local pg_dump snapshots (see scripts/db-backup.mjs).
+# Aiven is the source of truth; these are on-disk copies for restore-
+# to-local-dev only. Never commit — they contain rows.
+db-backups/*.sql
+db-backups/*.sql.gz
+
+# -------------------------------------------
+# Local Scripts
+# -------------------------------------------
+*.local.js
+*.local.ts
+*.local.sh
+*.local.ps1
+
+# -------------------------------------------
+# Old / Backup Config Files
+# -------------------------------------------
+*.old.js
+*.old.ts
+*.old.json
+
+# -------------------------------------------
+# Linting / Formatting Cache
+# -------------------------------------------
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# -------------------------------------------
+# Husky / Turbo / Storybook / Sentry
+# -------------------------------------------
+.husky/_/
+.turbo/
+storybook-static/
+.sentryclirc
+
+# -------------------------------------------
+# Large Media Files (keep locally, don't commit)
+# -------------------------------------------
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.m4a
+*.mp3
+*.wav
+*.webm
+*.gif
+*.bmp
+*.tiff
+
+# -------------------------------------------
+# Documents (keep locally)
+# -------------------------------------------
+*.docx
+*.xlsx
+*.pptx
+*.pdf
+!docs/public/*.pdf
+
+# -------------------------------------------
+# Empty / Orphaned Directories (cleanup artifacts)
+# -------------------------------------------
+# NOTE: zk-proof, zk-authenticity, zk-verification were legacy top-level
+# folders. They now serve as legacy-URL redirect stubs inside app/[locale]/
+# and MUST be tracked. Do not re-add them to this ignore list.
+# Same story for privacy/terms/whitepaper: both /app/*/ and
+# /app/[locale]/*/ contain redirect stubs that must stay tracked.
+# Ignore root-level orphan dirs but keep the app/ redirect stubs.
+# `*` matches `[locale]` as a directory name (git treats `[...]` as
+# a character class, so a literal `app/[locale]/` pattern would fail).
+/privacy/
+/terms/
+/simulator/
+/whitepaper/
+!app/privacy/
+!app/terms/
+!app/whitepaper/
+!app/*/privacy/
+!app/*/terms/
+!app/*/whitepaper/
+~/
+
+# -------------------------------------------
+# Investor / Demo Content (confidential)
+# -------------------------------------------
+Investors/
+docs/demo-videos/
+
+# -------------------------------------------
+# Confidential / Generated Docs
+# -------------------------------------------
+docs/ACQUISITION_PLAN.md
+docs/GO_TO_MARKET_PLAN.md
+docs/VIDEO_PITCH_SCRIPTS.md
+docs/AI_CHAT_TEST_REPORT.md
+docs/PROJECT_FIX_SUMMARY.md
+docs/QUICK_DEMO_SCRIPT.md
+docs/MOONLANDER_TEST_REPORT.md
+docs/PRICING_MODEL.md
+docs/PRICING_SPREADSHEET.md
+docs/PRICING_REVENUE_MODEL.md
+docs/SALES_PIPELINE.md
+docs/INVESTOR_*.md
+docs/SUI_BUILDER_REPORT_*.md
+docs/WEEKLY_SUBMISSION_2026-02-04.md
+docs/FOUNDER_VIDEO_SCRIPT.md
+docs/PROJECT_DESCRIPTION.md
+docs/MAINNET_MIGRATION_GUIDE.md
+docs/MAINNET_READINESS_REPORT.md
+docs/MAINNET_COST_SUMMARY.md
+docs/DEPLOYMENT_DECISION_GUIDE.md
+docs/COST_COMPARISON_CHART.txt
+docs/COMPLETION_SUMMARY_*.md
+docs/AUTO_REBALANCE_GUIDE.md
+docs/E2E_TEST_REPORT.md
+docs/VERCEL_COMPATIBILITY_ANALYSIS.md
+docs/PRODUCTION_READINESS_AUDIT.md
+docs/pitch-deck/slide-10-the-ask.md
+docs/pitch-deck/slide-09-team.md
+docs/pitch-deck/slide-08-competition.md
+docs/pitch-deck/slide-07-traction.md
+docs/pitch-deck/slide-06-business-model.md
+docs/pitch-deck/slide-05-market-opportunity.md
+docs/pitch-deck/glossary.md
+
+# -------------------------------------------
+# Redundant / Temporary Root Docs & Reports
+# -------------------------------------------
+VERCEL_QUICK_DEPLOY.md
+VERCEL_DEPLOYMENT_READY.md
+VERCEL_FREE_TIER_GUIDE.md
+VERCEL_CLI_SETUP.md
+TEST_COMPLETE.md
+CLAUDE.md
+
+# -------------------------------------------
+# Claude Code local settings + session state
+# -------------------------------------------
+.claude/
+
+# -------------------------------------------
+# Claude Code AI plugins — personal tooling, never platform code
+# -------------------------------------------
+# Graphify knowledge-graph output (per-machine, up to ~100 MB)
+# See CLAUDE.md § "Codebase navigation (Graphify)" for usage.
+graphify-out/
+
+# Ponytail lazy-senior-dev plugin — configs stay in home dir, but
+# guard against anything the plugin drops into the project.
+.ponytail*
+ponytail.config.*
+.ponytail-debt/
+
+# Operational snapshot artifacts (debug only)
+scripts/.neon-snapshot.json
+docs/GRANT_HONEST_ASSESSMENT.md
+docs/GRANT_PITCH_DECK_v2.md
+docs/GRANT_PITCH_DECK.md
+docs/PITCH_DECK_ALLIANCE.md
+docs/ZK_WHITEPAPER_ALIGNMENT.md
+docs/GRAPH_MIGRATION_PLAN.md
+docs/HACKATHON_STRATEGY.md
+docs/DEMO_VIDEO_PLATFORM.md
+docs/PRIZE_STRATEGY.md
+docs/submission-drafts.md
+docs/submission-evidence/pr-43-snapshot-2026-09-08.md
+
+# Ops docs (2026-09-23 policy update per CLAUDE.md § Repo hygiene):
+# setup runbooks, architecture diagrams, scaling playbooks, deploy
+# scripts with commentary — kept LOCAL to reduce copy-friendliness.
+# Contents survive in local checkout + git history; just not on HEAD.
+_ops/
+
+# Playwright MCP output — screenshot debris from dashboard/homepage audits
+.playwright-mcp/
+
+# Ad-hoc screenshots left in repo root during design audits.
+# Scope to repo root only so we don't accidentally hide legit committed
+# images under public/, docs/, etc.
+/*.png
+# Demo screenshots — captured via playwright, regenerable, bulky binary.
+# demo/README.md IS committed (reusable cheat sheet).
+demo/screenshots/**
+/*.jpeg
+/*.webp
+data/signal-interpreter/
+training/*/output/
+training/*/output-v*/
+training/*/*.jsonl.v*
+.vercel
+.env*

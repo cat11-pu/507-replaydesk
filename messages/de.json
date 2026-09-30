@@ -1,0 +1,649 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "agents": "Agenten",
+    "simulator": "Simulator",
+    "docs": "Dokumentation",
+    "vault": "Vault",
+    "zk": "ZK",
+    "whitepaper": "Whitepaper",
+    "rwa": "RWA",
+    "story": "Story",
+    "enterApp": "App öffnen",
+    "faq": "FAQ",
+    "signals": "Signals",
+    "sources": "Sources"
+  },
+  "footer": {
+    "product": "PRODUKT",
+    "platform": "PLATTFORM",
+    "resources": "RESSOURCEN",
+    "legal": "RECHTLICHES",
+    "dashboard": "Dashboard",
+    "agents": "Agenten",
+    "simulator": "Simulator",
+    "documentation": "Dokumentation",
+    "zkVerification": "ZK-Verifizierung",
+    "authenticity": "Authentizität",
+    "whitepaper": "Whitepaper",
+    "api": "API",
+    "contact": "Kontakt",
+    "community": "Community",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "rights": "Alle Rechte vorbehalten.",
+    "testnet": "SUI Mainnet",
+    "stage": "Mainnet Live",
+    "migrationNotice": "Formerly zkward.xyz — zkward.com is our new home.",
+    "builtWith": "Entwickelt mit ZK-STARK",
+    "story": "Unsere Story"
+  },
+  "connect": {
+    "button": "Wallet verbinden",
+    "disconnect": "Trennen",
+    "connecting": "Verbinden...",
+    "wrongNetwork": "Falsches Netzwerk",
+    "switchNetwork": "Zu {network} wechseln"
+  },
+  "dashboard": {
+    "title": "Risiko-Dashboard",
+    "overview": "Übersicht",
+    "positions": "Positionen",
+    "analytics": "Analytik",
+    "settings": "Einstellungen",
+    "totalValue": "Gesamter Portfolio-Wert",
+    "riskScore": "Risikobewertung",
+    "activePositions": "Aktive Positionen",
+    "monthlyReturn": "Monatliche Rendite",
+    "settingsModal": {
+      "title": "Einstellungen",
+      "subtitle": "Dashboard-Einstellungen konfigurieren",
+      "close": "Schließen",
+      "saving": "Speichern…",
+      "save": "Änderungen speichern",
+      "cancel": "Abbrechen",
+      "tabs": {
+        "general": "Allgemein",
+        "hedging": "Hedging",
+        "alerts": "Warnungen",
+        "privacy": "Datenschutz"
+      },
+      "general": {
+        "display": "Anzeige",
+        "darkMode": "Dunkelmodus",
+        "darkModeDesc": "Zwischen hellem und dunklem Design wechseln",
+        "compactView": "Kompaktansicht",
+        "compactViewDesc": "Mehr Daten auf weniger Raum anzeigen",
+        "wallet": "Wallet",
+        "walletDesc": "Wallet-Einstellungen werden über Ihren verbundenen Wallet-Anbieter verwaltet (MetaMask, WalletConnect usw.)"
+      },
+      "hedging": {
+        "autoApproval": "Automatische Freigabe",
+        "autoApprovalDesc": "Hedges unter dem Schwellenwert automatisch genehmigen",
+        "threshold": "Schwellenwert: ${amount}",
+        "riskLimits": "Risikolimits",
+        "maxLeverage": "Max. Hebel: {n}x",
+        "stopLoss": "Standard-Stop-Loss: {n}%",
+        "takeProfit": "Standard-Take-Profit: {n}%"
+      },
+      "alerts": {
+        "title": "Benachrichtigungseinstellungen",
+        "price": "Preiswarnungen",
+        "priceDesc": "Benachrichtigungen bei signifikanten Preisbewegungen erhalten",
+        "hedge": "Hedge-Warnungen",
+        "hedgeDesc": "Benachrichtigungen zu Hedge-Ausführungen und Liquidationen",
+        "agent": "KI-Agent-Warnungen",
+        "agentDesc": "Updates und Empfehlungen von KI-Agenten"
+      },
+      "privacy": {
+        "title": "Datenschutzfunktionen",
+        "private": "Privater Modus",
+        "privateDesc": "Transaktionsdetails mit Stealth-Adressen ausblenden",
+        "zk": "ZK-STARK-Beweise",
+        "zkDesc": "Zero-Knowledge-Beweise für Abrechnungen erzeugen",
+        "protected": "Ihre Privatsphäre ist geschützt",
+        "protectedDesc": "Alle sensiblen Daten sind verschlüsselt. ZK-Beweise stellen sicher, dass Ihre Positionen privat bleiben und dennoch on-chain überprüfbar sind."
+      }
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "language": "Sprache"
+  },
+  "howItWorks": {
+    "title": "So funktioniert es",
+    "subtitle": "Starten Sie in drei einfachen Schritten",
+    "step1": {
+      "title": "Verbinden",
+      "description": "Verknüpfen Sie Ihr Wallet und legen Sie Präferenzen fest",
+      "detail": "Web3-Wallet-Integration"
+    },
+    "step2": {
+      "title": "Überwachen",
+      "description": "KI-Agenten analysieren das Portfoliorisiko rund um die Uhr",
+      "detail": "Echtzeit-Risikoanalyse"
+    },
+    "step3": {
+      "title": "Ausführen",
+      "description": "Auto-Hedge und Transaktionsabwicklung",
+      "detail": "Automatisierter Schutz"
+    }
+  },
+  "zkProof": {
+    "title": "ZK-Beweis-Generator",
+    "subtitle": "Generieren und verifizieren Sie Zero-Knowledge-Beweise für Portfolio-Datenschutz",
+    "selectScenario": "Szenario auswählen",
+    "generateProof": "Beweis generieren",
+    "verifyProof": "Beweis verifizieren",
+    "proofGenerated": "Beweis generiert",
+    "proofVerified": "Beweis verifiziert",
+    "proofFailed": "Verifizierung fehlgeschlagen",
+    "showSecrets": "Geheimnisse anzeigen",
+    "hideSecrets": "Geheimnisse verbergen",
+    "scenarios": {
+      "portfolioRisk": "Portfolio-Risikobewertung",
+      "portfolioRiskDesc": "Beweisen Sie, dass das Portfolio-Risiko unter dem Schwellenwert liegt, ohne Positionen preiszugeben",
+      "settlementBatch": "Settlement-Batch-Validierung",
+      "settlementBatchDesc": "Beweisen Sie, dass der Settlement-Batch gültig ist, ohne Transaktionsdetails preiszugeben",
+      "compliance": "Regulatorische Compliance",
+      "complianceDesc": "Beweisen Sie die Einhaltung von Vorschriften, ohne sensible Daten preiszugeben"
+    }
+  },
+  "zkAuthenticity": {
+    "title": "ZK-STARK Authentizitätsverifizierung",
+    "subtitle": "Verifizieren Sie die Authentizität unserer Zero-Knowledge-Beweis-Implementierung",
+    "systemStatus": "Systemstatus",
+    "operational": "Betriebsbereit",
+    "verifyProof": "Einen Beweis verifizieren",
+    "pasteProof": "Fügen Sie Ihren Beweis-JSON hier ein",
+    "implementation": "Implementierungsdetails",
+    "cryptoParams": "Kryptografische Parameter",
+    "sourceCode": "Quellcode"
+  },
+  "zkVerification": {
+    "title": "ZK-STARK Mathematischer Beweis",
+    "subtitle": "Formale Verifizierung, dass ZKward einen echten ZK-STARK gemäß den akademischen Spezifikationen von Ben-Sasson et al. implementiert",
+    "auditorSummary": "Kurzfassung für Prüfer",
+    "implementation": "Implementierung",
+    "securityLevel": "Sicherheitsstufe",
+    "academicFoundation": "Akademische Grundlage"
+  },
+  "marketOpportunity": {
+    "title": "Massive Marktchance",
+    "subtitle": "Polymarket-Alpha + KI-Agenten + Consumer-Krypto — alles passiert gleichzeitig",
+    "polymarketVolume": "Polymarket-Volumen",
+    "polymarketDescription": "Monatliche Run-Rate (TRM Labs, 2026)",
+    "growthRate": "Wachstumsrate",
+    "growthDescription": "Marktexpansion 2024-2030",
+    "targetMarket": "Zielmarkt",
+    "targetDescription": "Krypto-native Retail · DeFi-Nutzer · individuelle Portfolio-Halter",
+    "potentialUsers": "Potenzielle Nutzer",
+    "usersDescription": "Polymarket-Trader, KI-Agenten-Enthusiasten, DeFi-Vault-Nutzer"
+  },
+  "liveMetrics": {
+    "title": "Echtzeit-Plattform-Metriken",
+    "subtitle": "Live-Performance-Daten von SUI Mainnet",
+    "tvl": "Gesamtwert gesperrt",
+    "transactions": "Transaktionen",
+    "gasSavings": "Gas-Einsparungen",
+    "aiAgentsOnline": "KI-Agenten online"
+  },
+  "roadmap": {
+    "title": "Produkt-Roadmap",
+    "subtitle": "Unser Weg, Prognosemarkt-Alpha für alle zugänglich zu machen",
+    "q1Title": "Q1 2026: Grundlage",
+    "q1Description": "Kerninfrastruktur aufgebaut — SUI Smart Contracts, 5-Agenten-Prototyp, ZK-Pipeline",
+    "q2Title": "Q2 2026: Mainnet-Launch",
+    "q2Description": "CommunityPool & 7 KI-Handelsagenten live (PriceMonitor + SuiPool ergänzt) auf SUI Mainnet",
+    "q3Title": "Q3 2026: Wachstum",
+    "q3Description": "Produktionsstart mit institutionellen Partnerschaften",
+    "q4Title": "Q4 2026: Skalierung",
+    "q4Description": "$500M+ TVL über mehrere Chains"
+  },
+  "cookies": {
+    "title": "Cookie-Einstellungen",
+    "description": "Cookies verbessern dein Erlebnis. Deine Wallet-Adresse ist öffentliche Blockchain-Daten — wir sammeln keine persönlichen Informationen.",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "customize": "Anpassen",
+    "necessaryOnly": "Nur Notwendige",
+    "acceptAll": "Alle akzeptieren",
+    "settings": "Cookie-Einstellungen",
+    "necessary": "Notwendig",
+    "alwaysOn": "Immer aktiv",
+    "necessaryDescription": "Erforderlich für Wallet-Verbindung und grundlegende Funktionalität",
+    "analytics": "Analytik",
+    "analyticsDescription": "Anonyme Nutzungsdaten zur Leistungsverbesserung",
+    "preferences": "Präferenzen",
+    "preferencesDescription": "Ihre Einstellungen und Präferenzen merken",
+    "rejectOptional": "Optionale ablehnen",
+    "savePreferences": "Einstellungen speichern"
+  },
+  "landing": {
+    "status": {
+      "liveOn": "Live on",
+      "hederaTestnet": "Hedera Testnet",
+      "suiMainnet": "SUI Mainnet",
+      "member": "member",
+      "members": "members"
+    },
+    "hero": {
+      "headline1": "20 signal sources.",
+      "headline2": "Ranked by track record.",
+      "subtitle": "Every prediction market, every funding rate, every on-chain signal — scored against real outcomes. Autonomous execution when the winners align."
+    },
+    "stats": {
+      "eyebrow": "Right now, in production",
+      "sources": {
+        "value": "20+",
+        "label": "signal sources fused per asset"
+      },
+      "accuracy": {
+        "value": "82.8%",
+        "label": "AI resolved accuracy on prediction market titles"
+      },
+      "mature": {
+        "value": "37",
+        "label": "sources with mature track records"
+      }
+    },
+    "cta": {
+      "depositUsdc": "See live signals",
+      "howItWorks": "How it works",
+      "viewSource": "View source",
+      "installApp": "Install app",
+      "installIosHint": "To install: tap the Share icon in Safari, scroll down, and tap \"Add to Home Screen\"."
+    },
+    "composition": {
+      "eyebrow": "Live signal",
+      "title": "What the aggregator says right now.",
+      "body": "20 sources fused per asset across BTC, ETH, SUI. Refreshes every 30 seconds."
+    },
+    "howItWorks": {
+      "eyebrow": "The loop",
+      "title": "Aggregate. Score. Execute.",
+      "body": "Runs every five minutes. All day. Without you.",
+      "step1": {
+        "title": "Fuse 20 sources per asset",
+        "body": "Polymarket, Kalshi, Delphi, Manifold, funding rates, orderbook depth, options skew, cross-asset correlation. Every tick, every asset."
+      },
+      "step2": {
+        "title": "Score each source against real outcomes",
+        "body": "Bayesian-shrunk hit rate per source. Auto-kill below 40%. Weights winners up to 2×, killed sources drop to 0.05×."
+      },
+      "step3": {
+        "title": "Execute when winners align",
+        "body": "Multi-agent safety guard. Adaptive stops. Every trade STARK-attested and written on-chain. Verifiable. Unfakeable."
+      }
+    },
+    "trust": {
+      "title": "Signal integrity, enforced by the code.",
+      "body": "Not a policy on our website. The pipeline itself refuses bad signals, bad venues, and stale data.",
+      "poolCap": {
+        "title": "Sources tracked",
+        "value": "111",
+        "hint": "Every source's hit rate accumulates against real outcomes."
+      },
+      "freshOracle": {
+        "title": "Signal freshness",
+        "value": "30s max",
+        "hint": "Aggregator refresh cadence per asset."
+      },
+      "withdrawThrottle": {
+        "title": "Auto-kill floor",
+        "value": "40%",
+        "hint": "Sources below this hit rate drop to 0.05× weight."
+      },
+      "proofs": {
+        "title": "Every trade attested",
+        "value": "Post-quantum",
+        "hint": "STARK on the Goldilocks field. 180-bit soundness."
+      },
+      "twoChains": {
+        "title": "Multi-venue execution",
+        "value": "SUI + EVM",
+        "hint": "Signal is chain-agnostic. Execution routes to the deepest venue."
+      }
+    },
+    "surfaces": {
+      "eyebrow": "Look around",
+      "title": "Every layer of ZKward is public.",
+      "body": "Signals, sources, trades, proofs. Nothing behind a login except your wallet.",
+      "dashboard": {
+        "eyebrow": "Dashboard",
+        "title": "Live capital, one screen.",
+        "body": "Balance, hedges, drawdown, proofs. Refreshed every minute."
+      },
+      "whitepaper": {
+        "eyebrow": "Whitepaper",
+        "title": "The technical version.",
+        "body": "20-source signal fusion, per-source calibration, AI-graded prediction market interpretation, STARK-attested execution."
+      },
+      "paper": {
+        "eyebrow": "Shadow trader",
+        "title": "$100K notional, full stack, public receipts.",
+        "body": "The same signals + agents + execution stack running against a live $100K paper book. Verify PnL before you fund anything."
+      }
+    },
+    "finalCta": {
+      "title": "See the signal stack running.",
+      "body": "Every source, every hit rate, every trade — public. Connect a wallet to deposit into the live demo vault.",
+      "alreadyIn": "{count} already in.",
+      "paused": "Deposits paused for maintenance."
+    },
+    "production": {
+      "eyebrow": "In production",
+      "title": "Live on Sui mainnet since 2026-06-12.",
+      "body": "A public track record measured on-chain, not in press releases.",
+      "daysLive": {
+        "title": "Days live",
+        "value": "100+",
+        "hint": "Continuous, no restarts. Contract-enforced $10K TVL cap."
+      },
+      "navSnapshots": {
+        "title": "NAV snapshots",
+        "value": "2,200+",
+        "hint": "Written on-chain every 15 minutes since inception."
+      },
+      "hedges": {
+        "title": "Hedges executed",
+        "value": "214",
+        "hint": "Lifetime, across BTC, ETH, SUI, SOL perps."
+      }
+    },
+    "builtFor": {
+      "eyebrow": "Built for",
+      "title": "Traders, researchers, and protocols.",
+      "body": "One signal pipeline, three audiences.",
+      "traders": {
+        "title": "Traders",
+        "body": "Signal quality that survives regime changes. Auto-kill for underperforming sources. Aggregator refreshes every 30 seconds."
+      },
+      "research": {
+        "title": "Research desks",
+        "body": "Every source hit rate is public. Historical calibration accessible via API. Reproducible from raw data."
+      },
+      "protocols": {
+        "title": "Protocols",
+        "body": "Autonomous execution with STARK-attested proofs. Multi-agent consensus. Contract-enforced TVL caps."
+      }
+    },
+    "startHere": {
+      "eyebrow": "Start here",
+      "body": "Three ways to try the platform. No wallet required to explore.",
+      "watchShadow": {
+        "title": "Watch the shadow trader",
+        "body": "$100K live demo running the full stack. Public receipts.",
+        "cta": "Open shadow trader"
+      },
+      "seeSignals": {
+        "title": "Read live signals",
+        "body": "Per-asset aggregator output, refreshed every 30 seconds.",
+        "cta": "Open dashboard"
+      },
+      "tryDemo": {
+        "title": "Deposit into the demo vault",
+        "body": "$10K contract-capped. Withdraw anytime.",
+        "cta": "Open vault"
+      }
+    }
+  },
+  "agentsPage": {
+    "meta": {
+      "title": "Die sieben Agenten — ZKward",
+      "description": "Sieben Spezialisten, die sich streiten, bevor echtes Geld bewegt wird. Live-Chat, nur lesend."
+    },
+    "header": {
+      "badge": "Sieben Agenten, live, nur lesend",
+      "title": "Frag ZKward.",
+      "subtitle": "Krypto, Märkte, der Vault. Jede Antwort läuft auf Live-Daten — Preise, Prediction-Signale, On-Chain-Zustand. Nichts einstudiert."
+    },
+    "meetTheCrew": "Das Team",
+    "architecture": "Architektur",
+    "architectureBody": "Alle Agenten kommunizieren über einen zentralen <bus>MessageBus</bus> und erweitern einen gemeinsamen <base>BaseAgent</base>. Jede Verantwortung lebt in einer Datei. Nichts teilt Zustand über Globals.",
+    "agents": {
+      "lead": {
+        "name": "Lead",
+        "role": "Der Verteiler",
+        "description": "Liest deine Frage, wählt den Spezialisten, näht die Antwort zu einem Stück zusammen.",
+        "capabilities": {
+          "c1": "Natural-Language-Intent-Parsing",
+          "c2": "Routet zum richtigen Spezialisten",
+          "c3": "Fügt Ergebnisse zu einer Antwort zusammen",
+          "c4": "Koordiniert Multi-Agent-Aufrufe"
+        }
+      },
+      "risk": {
+        "name": "Risk",
+        "role": "Der Besorgte",
+        "description": "Verfolgt Pool-Exposure. Markiert Positionen nahe der Liquidation. Bewertet die Portfolio-Gesundheit.",
+        "capabilities": {
+          "c1": "Value-at-Risk-(VaR)-Berechnung",
+          "c2": "Volatilität und Sharpe-Ratio",
+          "c3": "Liquidationsabstand pro Position",
+          "c4": "Portfolio-Gesundheitsscore, 0 bis 100"
+        }
+      },
+      "hedging": {
+        "name": "Hedging",
+        "role": "Der Versicherungsmakler",
+        "description": "Wählt den Gegen-Trade, wenn Risk etwas markiert. Größe, Hebel und Asset bekommen jeweils einen Confidence-Score vor dem Öffnen.",
+        "capabilities": {
+          "c1": "Short-Position-Sizing",
+          "c2": "Optionsstrategie-Generierung",
+          "c3": "Cross-Asset-Korrelationsanalyse",
+          "c4": "Jede Strategie mit Confidence-Score getaggt"
+        }
+      },
+      "settlement": {
+        "name": "Settlement",
+        "role": "Der Notar",
+        "description": "Verwandelt Entscheidungen in On-Chain-Transaktionen. Bündelt für Gas-Ersparnis, erzeugt den ZK-Beweis, rollt bei Fehlern zurück.",
+        "capabilities": {
+          "c1": "Batch-Transaktionsverarbeitung",
+          "c2": "Gas-Optimierung, typisch 20 bis 40 Prozent",
+          "c3": "ZK-STARK-Beweiskoordination",
+          "c4": "Rollback und Retry bei Fehlern"
+        }
+      },
+      "reporting": {
+        "name": "Reporting",
+        "role": "Der Buchhalter",
+        "description": "Schreibt die verständliche Aufzeichnung jedes Tages, jeder Woche, jedes Monats. Audit-Spur auf Abruf.",
+        "capabilities": {
+          "c1": "Tägliche, wöchentliche und monatliche Berichte",
+          "c2": "Performance- und P&L-Tracking",
+          "c3": "Analyse der Top-Positionen",
+          "c4": "Historische Trend-Erkennung"
+        }
+      },
+      "priceMonitor": {
+        "name": "Price Monitor",
+        "role": "Der Ausguck",
+        "description": "Beobachtet den 5-Minuten-Prediction-Ticker über BTC, ETH, SUI, CRO. Sendet Signal-Flips in Sekunden.",
+        "capabilities": {
+          "c1": "BTC-, ETH-, SUI-, CRO-Schwellenwertüberwachung",
+          "c2": "Polymarket-5-Min-Event-Stream",
+          "c3": "Feuert bei Signal-Flip",
+          "c4": "Alert-Routing pro Asset"
+        }
+      },
+      "suiPool": {
+        "name": "SUI Pool",
+        "role": "Der Operator",
+        "description": "Betreibt den SUI USDC-Pool. Liest das fusionierte Signal, wählt die Vier-Asset-Allokation, rebalanciert über BlueFin. Umgeht nie die On-Chain-Schutzmechanismen.",
+        "capabilities": {
+          "c1": "Vier-Asset-Allokation über BTC, ETH, SUI, CRO",
+          "c2": "BlueFin-Aggregator-Rebalance",
+          "c3": "SafeExecutionGuard-Durchsetzung",
+          "c4": "Rebalanciert nur, wenn KI-Konfidenz 65 Prozent überschreitet"
+        }
+      }
+    },
+    "chat": {
+      "title": "Frag zu Krypto, Märkten oder dem Vault",
+      "readOnly": "Nur lesen",
+      "subtitle": "Live-Preise. Live-Signale. Live-Vault-Zustand.",
+      "tryOneOfThese": "Probier eine davon:",
+      "thinking": "denke nach…",
+      "placeholder": "Stell eine Marktfrage oder eine Vault-Frage…",
+      "send": "Fragen",
+      "sending": "Sende",
+      "sendAria": "Senden",
+      "rateLimited": "Rate-Limit erreicht. Bitte ~30 Sek. warten.",
+      "requestFailed": "Anfrage fehlgeschlagen (HTTP {status}).",
+      "networkError": "Netzwerkfehler",
+      "toolCalls": "{count, plural, =1 {# Tool-Aufruf} other {# Tool-Aufrufe}}",
+      "notConfigured": "Status-Oracle nicht konfiguriert (wartet auf ASI_API_KEY in prod).",
+      "prompts": {
+        "p1": "Wie steht BTC gerade?",
+        "p2": "Markt-Snapshot — BTC, ETH, SOL, SUI",
+        "p3": "Was denkt der Prediction Market über ETH?",
+        "p4": "Erklär Funding Rates in zwei Sätzen",
+        "p5": "Was hat unser Vault in den letzten 24 h getan?",
+        "p6": "Trifft unsere KI diese Woche richtig?"
+      },
+      "clear": "Clear",
+      "clearHistory": "Clear conversation",
+      "newChat": "New Chat",
+      "newChatTooltip": "Start a fresh conversation (resets memory)",
+      "emptyResponse": "Keine Antwort erhalten - der Dienst wurde moeglicherweise aktualisiert. Bitte erneut versuchen."
+    }
+  },
+  "story": {
+    "meta": {
+      "title": "Unsere Story — ZKward",
+      "description": "Wie ZKward begann, was es tut und warum wir es sagen, wenn es Geld verliert."
+    },
+    "header": {
+      "eyebrow": "Unsere Story",
+      "title": "Wie wir hierhergekommen sind",
+      "subtitle": "Fünf Minuten. Kein Fachjargon. Schnapp dir einen Kaffee."
+    },
+    "intro": "Das Projekt hieß früher <em>ZkVanguard</em>. Die Leute fragten ständig, ob wir ein Bond-Fonds seien. Es klang nach dem Rentenplan deines Vaters. Also haben wir es in <strong>ZKward</strong> umbenannt. Gleiche Idee, etwas unbeholfen auszusprechen. Du gewöhnst dich dran.",
+    "whatItIs": {
+      "heading": "Was es ist, in einem Satz",
+      "body": "Ein Spar-Pool, der für dich handelt und seine Mathematik zeigt, damit du uns nicht aufs Wort glauben musst."
+    },
+    "howItWorks": {
+      "heading": "Wie es funktioniert, schlicht",
+      "body1": "Du zahlst USDC ein. Eine kleine Crew von Programmen liest, worauf Leute in Prediction Markets (wie Polymarket) wetten, und stellt darauf basierend Krypto-Trades an. Wenn gehandelt wird, entsteht auch eine kleine kryptografische Quittung, die jeder prüfen kann. Die Quittung beweist, dass der Trade die Regeln eingehalten hat. Ohne deine Position preiszugeben.",
+      "body2": "Stell es dir wie einen Autopiloten mit Flugschreiber vor. Nur ist der Schreiber öffentlich, und der Autopilot hebt bei schlechtem Wetter nicht ab."
+    },
+    "whereStarted": {
+      "heading": "Wo es anfing",
+      "body1": "Ein Hackathon-Wochenende. Zu viel Kaffee. Eine Frage: <em>Wenn Computer echtes Geld bewegen, warum sollte irgendjemand ihrer Argumentation vertrauen?</em> Wir dachten, wir würden in zwei Tagen antworten. Es dauerte achtzehn Monate.",
+      "body2": "Unterwegs gewannen wir fünf Hackathons, trugen zum Tether-Wallet-Toolkit bei und deployten auf einer Handvoll Blockchains. Die meisten Test-Deployments hielten einen Nachmittag. <strong>SUI</strong> hielt. Schnell, günstig und bricht nicht, wenn man es schief anschaut. Dort lebt das Geld jetzt."
+    },
+    "shipToday": {
+      "heading": "Was wir heute shippen",
+      "item1": "Ein echter Pool auf SUI Mainnet. Bewusst klein. Der Vertrag deckelt Einzahlungen bei 10.000 $. Wir wollten beweisen, dass es funktioniert, bevor wir skalieren. Langsam ist der Punkt.",
+      "item2": "Acht Sicherheitsschalter, die alles pausieren können, wenn etwas seltsam aussieht. Einer löste gestern nach einem harten Testtag aus (mehr dazu unten).",
+      "item3": "Eine Lernschleife: Die KI benotet ihre eigenen Trades, trainiert über Nacht nach und versucht es erneut. Manchmal wird sie besser. Manchmal findet sie neue Wege zu scheitern. Wir veröffentlichen beides.",
+      "item4": "Eine kryptografische Quittung für jeden Trade. Kein Screenshot. Ein Beweis."
+    },
+    "whyWeTell": {
+      "heading": "Warum wir es sagen, wenn er verliert",
+      "body1": "Die meisten Projekte reden nur über ihre Gewinne. Gerade jetzt liegt unser Test-Trader auf dem Papier etwa 68.000 $ im Minus. Wir sagen es dir, weil das der ganze Punkt ist. Wenn du die Verluste nicht siehst, bedeuten die Gewinne wenig.",
+      "body2": "Außerdem: So wird aus einem kleinen Verlust drei Monate später ein viel größerer. Wir haben es einmal versucht. Nicht empfehlenswert."
+    },
+    "whoBuilds": {
+      "heading": "Wer es baut",
+      "body1": "Meistens eine Person, neun Zeitzonen entfernt von den meisten von euch. Informatik-Abschluss, einige Jahre in großen Firmen, eine unvernünftige Anzahl an Nebenprojekten. Finanziert aus Ersparnissen und kleinen Grants, die etwa dann auszahlen, wenn der Gründer beginnt, Mittagessen ausfallen zu lassen.",
+      "body2": "Der Paper-Trader hat gelegentlich mehr pro Monat gekostet, als der Gründer isst. Wir halten das für on-brand."
+    },
+    "next": {
+      "heading": "Wohin es als Nächstes geht",
+      "body": "Zwei Dinge müssen passieren. Erstens beweisen, dass der Trader im Test-Pool aufhört, Geld zu verlieren. Dann den Einzahlungs-Cap anheben, ein vorsichtiger Schritt nach dem anderen, mit einem echten Drawdown-Test bei jedem Schritt. Wenn wir einen Schritt überspringen, bitte auf <telegram>Telegram</telegram> schreien."
+    },
+    "footer": {
+      "technical": "Willst du die technische Version? <link>Whitepaper lesen</link>",
+      "readWhitepaper": "Whitepaper lesen",
+      "orJust": "Oder einfach <link>die App öffnen</link>.",
+      "openApp": "die App öffnen"
+    }
+  },
+  "faq": {
+    "meta": {
+      "title": "FAQ — ZKward",
+      "description": "Was ZKward ist, wie es funktioniert, was mit deinem Geld passiert und warum der Paper-Trader gerade im Minus ist."
+    },
+    "header": {
+      "eyebrow": "FAQ",
+      "title": "Häufige Fragen",
+      "subtitle": "Kurze Antworten. Wenn deine fehlt, schreib an <email>ashish.regmi@zkward.com</email> und wir fügen sie hinzu."
+    },
+    "q1": {
+      "q": "Was ist ZKward?",
+      "a": "ZKward ist ein autonomer Krypto-Vault. Du zahlst USDC ein. Sieben KI-Agenten lesen Prediction Markets, Funding Rates und Preis-Momentum und handeln in BTC, ETH und SUI. Jede Hedge-Entscheidung schließt mit einem kryptografischen Beweis, den jeder on-chain verifizieren kann."
+    },
+    "q2": {
+      "q": "Ist ZKward ein Hedgefonds?",
+      "a": "Nein. Ein Hedgefonds ist eine regulierte Rechtsform. ZKward ist ein On-chain-Vault — non-custodial, permissionless, keine Akkreditierung, On-chain-Gebührenbuchhaltung, Open-Source-Strategie. Ähnliche Directional-Plays, aber mit öffentlichen Beweisen statt vierteljährlicher Briefe."
+    },
+    "q3": {
+      "q": "Wie viel kann ich einzahlen?",
+      "a": "10.000 $ insgesamt, gedeckelt vom Move-Vertrag während der Operational-Proof-Phase. On-chain durchgesetzt — niemand, uns eingeschlossen, kann sie ohne Governance-Aktion anheben. Der Cap steigt Schritt für Schritt, sobald jede Stufe einen echten Drawdown-Test überlebt."
+    },
+    "q4": {
+      "q": "Wo werden meine Mittel verwahrt?",
+      "a": "In einem SUI-Move-Objekt, das vom Pool-Vertrag kontrolliert wird. Non-custodial — deine Keys bleiben bei dir. Auszahlungen sind permissionless und jederzeit möglich, mit einem on-chain durchgesetzten 25-%-pro-Tag-Konto-Throttle gegen Draining-Angriffe."
+    },
+    "q5": {
+      "q": "Was ist ein STARK-Beweis und warum sollte mich das interessieren?",
+      "a": "Ein STARK-Beweis ist eine mathematische Quittung, mit der jeder verifizieren kann, dass eine Berechnung korrekt ablief, ohne die privaten Eingaben zu sehen. Wenn ZKward einen Hedge öffnet oder schließt, schreibt es einen STARK-Beweis auf die Chain, der belegt, dass der Trade die Vault-Regeln (Asset-Caps, Leverage-Caps, Größenlimits) einhielt. Keine Blackbox. Kein „Vertrau uns“."
+    },
+    "q6": {
+      "q": "Auf welchen Chains läuft ZKward?",
+      "a": "SUI Mainnet ist die Hauptchain (Live-Pool auf Paket 0x107292…7b726). Referenz-Deployments existieren auf Hedera Testnet, Sepolia, Cronos EVM, Oasis Sapphire und Arbitrum Sepolia. Portierbarkeit ist bewiesen; Produktion expandiert dort, wo die Nachfrage es rechtfertigt."
+    },
+    "q7": {
+      "q": "Was sind die Gebühren?",
+      "a": "50 Basispunkte jährliche Verwaltung und 10 % Performance auf realisierte Gewinne. Gebühren laufen durch ein MSafe-Multisig-gehaltenes FeeManagerCap, getrennt vom operativen AdminCap. Der Gebührenpfad kann nicht durch eine Kompromittierung des Admin-Keys übernommen werden."
+    },
+    "q8": {
+      "q": "Warum verliert der Paper-Trader gerade Geld?",
+      "a": "Öffentliche Transparenz. Wir lassen einen Paper-Trader gegen echte Signale laufen und veröffentlichen jeden Trade — Gewinne und Verluste. Der kumulative Paper-PnL liegt um -68.000 $, während wir das neue Gate-System (Volatility-Filter, Streak Guard, Trend Alignment, Signal-Quality) feintunen. Wenn wir die Verluste versteckten, hätten die Gewinne keine Aussage."
+    },
+    "q9": {
+      "q": "Woher weiß ich, dass die KI sich nichts ausdenkt?",
+      "a": "Jede Entscheidung, die Kapital bewegt, emittiert einen STARK-Beweis auf der SUI-Chain. Der Beweis bindet die Entscheidung an On-chain-Invarianten (Asset-Caps, Leverage-Caps, Größe). Jeder kann mit dem On-chain-Verifier prüfen. Trades unter 100 K $ passieren außerdem einen 5-Sekunden-Cooldown, ein 30-bps-Slippage-Limit und einen Max-3-gleichzeitig-Breaker. Trades über 100 K $ brauchen ein 2-von-3-Votum des Agent-Quorums."
+    },
+    "q10": {
+      "q": "Ist ZKward sicher gegen Quantencomputer?",
+      "a": "Das STARK-Beweissystem ist transparent (kein Trusted Setup) und nutzt nur SHA-256-Merkle-Bäume und das Goldilocks-Primkörper. Keine elliptischen Kurven, kein Discrete-Log, keine Pairings. Shors Algorithmus, der RSA und ECDSA bricht, ist hier keine Bedrohung. Effektive Soundness ist 180 Bit, 52 Bit über NIST Post-Quantum Level 1."
+    },
+    "q11": {
+      "q": "Kann ich jederzeit auszahlen?",
+      "a": "Ja. Auszahlungen sind permissionless. Du signierst eine Transaktion, der Vertrag berechnet deinen Anteil am Pool-NAV, die Mittel gehen zurück in deine Wallet. Ein 25-%-pro-Tag-Konto-Throttle wird vom Vertrag erzwungen, um Draining unter Stress zu verhindern. Kein Lockup, keine Ankündigungsfrist, keine Manager-Freigabe."
+    },
+    "q12": {
+      "q": "Wie kontaktiere ich das Team?",
+      "a": "E-Mail an ashish.regmi@zkward.com oder tritt unserem Telegram bei (Link im Footer). GitHub Issues gehen auch für technische Fragen."
+    },
+    "footer": {
+      "technical": "Willst du die vollständige technische Version? <link>Whitepaper lesen</link>",
+      "readWhitepaper": "Whitepaper lesen",
+      "orRead": "Oder lies <link>unsere Story</link>.",
+      "ourStory": "unsere Story"
+    }
+  },
+  "whitepaperMeta": {
+    "title": "Whitepaper",
+    "description": "Die vollständige ZKward-These: Prediction-Market-Alpha, 7-Agenten-Architektur, STARK-attestierte Ausführung, Tokenomics, Roadmap."
+  },
+  "legacyBanner": {
+    "message": "<strong>zkward.xyz wird abgeschaltet</strong> — wir sind jetzt auf <link>zkward.com</link>.",
+    "dismiss": "Schließen"
+  }
+}

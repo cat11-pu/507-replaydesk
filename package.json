@@ -1,0 +1,254 @@
+{
+  "name": "zkward",
+  "version": "0.2.0",
+  "description": "Signal intelligence platform for algorithmic trading. 20 sources fused per asset - prediction markets (Polymarket, Kalshi, Delphi, Manifold), funding rates, orderbook depth, options skew, cross-asset correlation. Every source has a Bayesian-shrunk hit rate against real outcomes; sources below 40% auto-kill. Fine-tuned model reads every new market and extracts direction, horizon, confidence (82.8% resolved accuracy). Autonomous multi-agent execution with STARK-attested settlement. Live demo vault on SUI mainnet.",
+  "author": "ZKward Team",
+  "license": "Apache-2.0",
+  "keywords": [
+    "signal-intelligence",
+    "algorithmic-trading",
+    "prediction-markets",
+    "polymarket",
+    "kalshi",
+    "source-calibration",
+    "ai-signal-fusion",
+    "autonomous-execution",
+    "zk-proofs",
+    "sui",
+    "web3"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZkVanguard/ZkVanguard.git"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "prepare": "[ -n \"$VERCEL\" ] || [ -n \"$CI\" ] || husky install",
+    "security:scan": "node scripts/security-scan.cjs",
+    "security:supply-chain": "node scripts/verify-supply-chain.cjs",
+    "verify:frontend": "node scripts/verify-frontend.cjs",
+    "prebuild": "node scripts/security-scan.cjs && node scripts/verify-supply-chain.cjs && node scripts/verify-frontend.cjs",
+    "clean": "rimraf dist coverage .hardhat cache",
+    "compile": "hardhat compile",
+    "compile:circuits": "bun run scripts/utils/generate-circuits.ts",
+    "test": "cross-env ZK_PYTHON_ENABLED=true ZK_PYTHON_API_URL=http://127.0.0.1:8000 bun test .test.ts --timeout 30000 --verbose",
+    "test:agents": "bun test test/agents",
+    "test:integration": "bun test test/integration",
+    "test:contracts": "hardhat test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch",
+    "test:debug": "DEBUG=true bun test --verbose",
+    "test:ci": "bun test --coverage",
+    "lint": "bun run lint:contracts && bun run lint:ts",
+    "lint:contracts": "solhint 'contracts/**/*.sol'",
+    "lint:ts": "eslint . --ext .ts,.tsx",
+    "lint:fix": "bun run lint:contracts -- --fix && bun run lint:ts -- --fix",
+    "format": "prettier --write '**/*.{ts,tsx,sol,json,md}'",
+    "format:check": "prettier --check '**/*.{ts,tsx,sol,json,md}'",
+    "typecheck": "tsc --noEmit",
+    "db:backup": "node scripts/db-backup.mjs",
+    "db:restore-local": "node scripts/db-restore-local.mjs",
+    "db:list-backups": "node scripts/db-list-backups.mjs",
+    "agents:start": "bun run agents/core/LeadAgent.ts",
+    "agents:init": "bun run scripts/setup/setup-agents.ts",
+    "agents:dev": "bun --watch run agents/core/LeadAgent.ts",
+    "start:next": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "fund:wallets": "bun run scripts/setup/fund-wallets.ts",
+    "translate": "bun run scripts/translate-whitepaper.ts",
+    "ai:extract": "bun run scripts/ai-training/build-signal-interpreter-dataset.ts --limit=2000",
+    "ai:label": "bun run scripts/ai-training/label-with-llm.ts --concurrency=4",
+    "ai:format": "bun run scripts/ai-training/to-soup-format.ts",
+    "ai:evaluate": "bun run scripts/ai-training/evaluate-model.ts",
+    "ai:resolve": "bun run scripts/ai-training/resolve-interpretations.ts",
+    "ai:postmortem": "bun run scripts/ai-training/postmortem.ts",
+    "treasury:status": "bun run scripts/treasury-status.ts",
+    "local:status": "powershell -ExecutionPolicy Bypass -File scripts/local-ai.ps1 status",
+    "local:pause": "powershell -ExecutionPolicy Bypass -File scripts/local-ai.ps1 pause",
+    "local:resume": "powershell -ExecutionPolicy Bypass -File scripts/local-ai.ps1 resume",
+    "local:rerun": "powershell -ExecutionPolicy Bypass -File scripts/local-ai.ps1 rerun",
+    "local:tray": "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File scripts/local-ai-tray.ps1",
+    "ai:train:full": "bash scripts/ai-training/run-training-pipeline.sh",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8192\" next build --webpack",
+    "build:full": "bun run compile && bun run build",
+    "start": "bun run agents:start"
+  },
+  "overrides": {
+    "axios": "^1.18.1",
+    "lodash": "^4.17.21",
+    "form-data": "^4.0.6",
+    "fast-xml-parser": "^5.3.0",
+    "fast-uri": "^3.1.0",
+    "minimatch": "^9.0.5",
+    "path-to-regexp": "^6.3.0",
+    "picomatch": "^4.0.0",
+    "socket.io-parser": "^4.2.6",
+    "wagmi": "^2.19.5",
+    "protobufjs": "^8.8.0"
+  },
+  "resolutions": {
+    "axios": "^1.18.1",
+    "lodash": "^4.17.21",
+    "form-data": "^4.0.6",
+    "fast-xml-parser": "^5.3.0",
+    "fast-uri": "^3.1.0",
+    "minimatch": "^9.0.5",
+    "path-to-regexp": "^6.3.0",
+    "picomatch": "^4.0.0",
+    "socket.io-parser": "^4.2.6",
+    "wagmi": "^2.19.5"
+  },
+  "dependencies": {
+    "@bluefin-exchange/bluefin7k-aggregator-sdk": "^5.5.1",
+    "@bluefin-exchange/pro-sdk": "^1.13.0",
+    "@crypto.com/ai-agent-client": "^1.0.2",
+    "@crypto.com/developer-platform-client": "^1.1.2",
+    "@hashgraph/sdk": "^2.81.0",
+    "@mysten/dapp-kit": "^0.14.0",
+    "@mysten/sui": "^1.0.0",
+    "@noble/hashes": "^2.0.1",
+    "@openzeppelin/contracts": "^5.6.1",
+    "@privy-io/react-auth": "^3.40.0",
+    "@privy-io/server-auth": "^1.32.5",
+    "@privy-io/wagmi": "^4.0.17",
+    "@pythnetwork/pyth-sui-js": "^3.0.0",
+    "@solana/web3.js": "^1.95.0",
+    "@stripe/stripe-js": "^9.15.0",
+    "@tanstack/react-query": "^5.101.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.1",
+    "@vercel/config": "^0.5.6",
+    "chart.js": "^4.5.1",
+    "dotenv": "^16.3.1",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.303.0",
+    "next": "^16.2.12",
+    "next-intl": "^4.7.0",
+    "pg": "^8.22.0",
+    "react": "^19.2.8",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.2.8",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "server-only": "^0.0.1",
+    "viem": "^2.55.10",
+    "wagmi": "^2.19.5"
+  },
+  "optionalDependencies": {
+    "openai": "^4.77.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",
+    "@nomicfoundation/hardhat-ethers": "^3.1.2",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.4",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.3",
+    "@openzeppelin/hardhat-upgrades": "^3.9.1",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^5.2.3",
+    "@types/jest": "^29.5.11",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.13.3",
+    "@types/pg": "^8.11.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "autoprefixer": "^10.5.4",
+    "chai": "^4.2.0",
+    "cross-env": "^10.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^16.2.12",
+    "eslint-config-prettier": "^9.1.0",
+    "ethers": "^6.16.0",
+    "hardhat": "^2.27.2",
+    "hardhat-contract-sizer": "^2.10.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.0",
+    "playwright": "^1.62.1",
+    "postcss": "^8.5.25",
+    "prettier": "^3.9.6",
+    "prettier-plugin-solidity": "^1.3.1",
+    "rimraf": "^6.1.3",
+    "solhint": "^4.1.1",
+    "solidity-coverage": "^0.8.5",
+    "tailwindcss": "^3.4.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.5",
+    "typechain": "^8.3.2",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.sol": [
+      "solhint --fix",
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 2,
+    "overrides": [
+      {
+        "files": "*.sol",
+        "options": {
+          "printWidth": 120,
+          "tabWidth": 4,
+          "useTabs": false,
+          "singleQuote": false,
+          "bracketSpacing": false
+        }
+      }
+    ]
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "env": {
+      "node": true,
+      "es2021": true
+    },
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
+  },
+  "browserslist": [
+    "chrome >= 100",
+    "edge >= 100",
+    "firefox >= 100",
+    "safari >= 15",
+    "ios_saf >= 15",
+    "not dead",
+    "not IE 11"
+  ],
+  "packageManager": "bun@1.3.0"
+}

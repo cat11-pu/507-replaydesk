@@ -1,0 +1,174 @@
+/**
+ * Trade quality gates for the polymarket-edge-trader.
+ *
+ * Pure functions that filter trade decisions using orthogonal edges
+ * (funding rate, exposure concentration, prolonged losing streak).
+ * Each is env-tunable and defaults to a conservative setting.
+ *
+ * Not to be confused with the SafeExecutionGuard — that's the global
+ * position-cap/consensus enforcer. These are per-trade profitability
+ * filters that compound with the AI signal edge.
+ */
+
+export type Side = 'LONG' | 'SHORT';
+
+/**
+ * Funding-rate edge — SHORT receives funding when rate is POSITIVE,
+ * LONG receives when NEGATIVE. Trading with funding tailwind adds a
+ * meaningful, compounding return on top of the AI signal:
+ *   funding 0.0001/8h ≈ 0.03% per day ≈ 11% annualised
+ *
+ * On BlueFin perps, funding is settled every 8h. If we hold a position
+ * that RECEIVES funding, we get paid; if we hold one that PAYS funding,
+ * we bleed. Over 30+ day holds the difference dominates the AI signal.
+ */
+export interface FundingEdgeResult {
+  advantage: 'RECEIVE' | 'PAY' | 'NEUTRAL';
+  bonusPct: number; // 0-15 added to prediction.confidence
+  reason: string;
+}
+
+export function fundingEdge(
+  side: Side,
+  fundingRatePer8h: number,
+  opts?: { neutralThreshold?: number; maxBonus?: number },
+): FundingEdgeResult {
+  const neutral = opts?.neutralThreshold ?? 0.00003; // 0.003%/8h
+  const maxBonus = opts?.maxBonus ?? 15;
+
+  if (Math.abs(fundingRatePer8h) < neutral) {
+    return { advantage: 'NEUTRAL', bonusPct: 0, reason: `funding ${(fundingRatePer8h * 100).toFixed(4)}% within neutral band` };
+  }
+
+  const receives = (side === 'SHORT' && fundingRatePer8h > 0) || (side === 'LONG' && fundingRatePer8h < 0);
+  const advantage = receives ? 'RECEIVE' : 'PAY';
+
+  // Scale bonus by |funding| — linear interpolation between the neutral
+  // threshold and the funding-rate guard's max (BLUEFIN_MAX_FUNDING_RATE
+  // default 0.0001 = 0.01%/8h). Above that, funding-rate guard rejects
+  // the trade entirely so we never see bigger values here.
+  const scale = Math.min(1, (Math.abs(fundingRatePer8h) - neutral) / (0.0001 - neutral));
+  const bonusPct = Math.round(receives ? scale * maxBonus : -scale * maxBonus);
+
+  return {
+    advantage,
+    bonusPct,
+    reason: `${side} ${receives ? 'receives' : 'pays'} funding at ${(fundingRatePer8h * 100).toFixed(4)}%/8h`,
+  };
+}
+
+/**
+ * Total notional exposure cap. Prevents the concentration bleed seen
+ * on 2026-07-15 where a single $18 hedge (48% of $38 NAV) drove most
+ * of the day's losses. Trades that would push total notional above
+ * cap are rejected.
+ */
+export interface ExposureCapResult {
+  ok: boolean;
+  currentNotionalUsd: number;
+  proposedNotionalUsd: number;
+  postOpenPct: number;
+  capPct: number;
+  reason: string;
+}
+
+export function exposureCap(args: {
+  navUsd: number;
+  currentTotalNotionalUsd: number;
+  proposedTradeNotionalUsd: number;
+  maxPct?: number;
+}): ExposureCapResult {
+  const envMax = Number(process.env.TRADE_MAX_TOTAL_NOTIONAL_PCT);
+  // ponytail: default 60 (was 30). Full-autonomy stance: SUI pool's dual-leg
+  // hedge shares the BlueFin account; at 30 a single $18 pool hedge blocks
+  // the trader entirely. 60 lets both engines coexist; kill via env if
+  // concentration bleeds again.
+  const maxPct = args.maxPct ?? (Number.isFinite(envMax) ? envMax : 60);
+  const postTotal = args.currentTotalNotionalUsd + args.proposedTradeNotionalUsd;
+  const postPct = args.navUsd > 0 ? (postTotal / args.navUsd) * 100 : 0;
+  const ok = postPct <= maxPct;
+  return {
+    ok,
+    currentNotionalUsd: args.currentTotalNotionalUsd,
+    proposedNotionalUsd: args.proposedTradeNotionalUsd,
+    postOpenPct: postPct,
+    capPct: maxPct,
+    reason: ok
+      ? `post-open exposure ${postPct.toFixed(1)}% ≤ cap ${maxPct}%`
+      : `post-open exposure ${postPct.toFixed(1)}% would exceed cap ${maxPct}%`,
+  };
+}
+
+/**
+ * Regret-based full halt — when 30-day regret score is deeply negative
+ * (badly losing streak), halt entirely for 24h. Distinct from the
+ * conviction-gate adjustment which only raises the threshold; this
+ * halts the trader outright.
+ *
+ * Rationale: on a bad streak, taking any trade at all is negative EV.
+ * Even the raised conviction bar could be cleared by noise. Better to
+ * step away and let the streak break naturally.
+ */
+export interface RegretHaltResult {
+  halt: boolean;
+  regretScore: number;
+  threshold: number;
+  reason: string;
+}
+
+export function regretBasedHalt(args: {
+  regretScore: number;
+  threshold?: number;
+}): RegretHaltResult {
+  const envThresh = Number(process.env.TRADER_REGRET_HALT_THRESHOLD);
+  const threshold = args.threshold ?? (Number.isFinite(envThresh) ? envThresh : -0.3);
+  const halt = args.regretScore < threshold;
+  return {
+    halt,
+    regretScore: args.regretScore,
+    threshold,
+    reason: halt
+      ? `regret ${args.regretScore.toFixed(3)} < halt threshold ${threshold} — 24h cooldown`
+      : `regret ${args.regretScore.toFixed(3)} ≥ ${threshold} — trader active`,
+  };
+}
+
+/**
+ * In-process risk gate for polymarket-edge-trader — mirrors RiskAgent's
+ * invariants without needing an LLM round-trip on the cron hot-path.
+ * Refusing here is conservative:
+ *   • leverage ≤ 5
+ *   • notional ≤ POLYMARKET_EDGE_RISK_GATE_PCT (default 99%) of free × leverage
+ *   • size ≥ minQty
+ *   • refPrice > 0
+ *
+ * Kept pure — pass leverage/minQty as args, no import-time coupling to
+ * trader route constants. Env fallback preserved for POLYMARKET_EDGE_RISK_GATE_PCT.
+ */
+export function riskGate(args: {
+  leverage: number;
+  minQty: number;
+  sizeQty: number;
+  notionalUsd: number;
+  free: number;
+  refPrice: number;
+}): { ok: true } | { ok: false; reason: string } {
+  if (args.leverage > 5) return { ok: false, reason: `leverage ${args.leverage} > 5x cap` };
+  if (args.sizeQty < args.minQty) {
+    return { ok: false, reason: `size ${args.sizeQty} < ${args.minQty}` };
+  }
+  if (args.refPrice <= 0) return { ok: false, reason: 'no ref price' };
+  // Notional vs free collateral × leverage. Greedy mode 2026-07-14: cap
+  // 50% → 90% → 0.99 (env). ETH minQty at $14 free needs $42 notional =
+  // ~100% of $42 capacity — 90% cap blocks. 0.99 lets ETH clear; trailing
+  // stop bounds any adverse move regardless.
+  const maxNotional = args.free * args.leverage;
+  const notionalCapPct = Number(process.env.POLYMARKET_EDGE_RISK_GATE_PCT || 0.99);
+  if (args.notionalUsd > maxNotional * notionalCapPct) {
+    return {
+      ok: false,
+      reason: `notional $${args.notionalUsd.toFixed(2)} > ${(notionalCapPct * 100).toFixed(0)}% of capacity $${maxNotional.toFixed(2)}`,
+    };
+  }
+  return { ok: true };
+}

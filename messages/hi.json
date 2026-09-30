@@ -1,0 +1,649 @@
+{
+  "nav": {
+    "home": "होम",
+    "dashboard": "डैशबोर्ड",
+    "agents": "एजेंट",
+    "simulator": "सिम्युलेटर",
+    "docs": "दस्तावेज़",
+    "vault": "वॉल्ट",
+    "zk": "ZK",
+    "whitepaper": "व्हाइटपेपर",
+    "rwa": "RWA",
+    "story": "कहानी",
+    "enterApp": "ऐप खोलें",
+    "faq": "FAQ",
+    "signals": "Signals",
+    "sources": "Sources"
+  },
+  "footer": {
+    "product": "प्रोडक्ट",
+    "platform": "प्लेटफॉर्म",
+    "resources": "रिसोर्सेज",
+    "legal": "लीगल",
+    "dashboard": "डैशबोर्ड",
+    "agents": "एजेंट",
+    "simulator": "सिम्युलेटर",
+    "documentation": "दस्तावेज़",
+    "zkVerification": "ZK सत्यापन",
+    "authenticity": "प्रामाणिकता",
+    "whitepaper": "Whitepaper",
+    "api": "API",
+    "contact": "संपर्क करें",
+    "community": "समुदाय",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "privacy": "गोपनीयता नीति",
+    "terms": "सेवा की शर्तें",
+    "rights": "सर्वाधिकार सुरक्षित।",
+    "testnet": "SUI Mainnet",
+    "stage": "Mainnet लाइव",
+    "migrationNotice": "Formerly zkward.xyz — zkward.com is our new home.",
+    "builtWith": "ZK-STARK के साथ निर्मित",
+    "story": "हमारी कहानी"
+  },
+  "connect": {
+    "button": "वॉलेट कनेक्ट करें",
+    "disconnect": "डिस्कनेक्ट करें",
+    "connecting": "कनेक्ट हो रहा है...",
+    "wrongNetwork": "गलत नेटवर्क",
+    "switchNetwork": "{network} पर स्विच करें"
+  },
+  "dashboard": {
+    "title": "रिस्क डैशबोर्ड",
+    "overview": "ओवरव्यू",
+    "positions": "पोजीशन",
+    "analytics": "एनालिटिक्स",
+    "settings": "सेटिंग्स",
+    "totalValue": "कुल पोर्टफोलियो वैल्यू",
+    "riskScore": "रिस्क स्कोर",
+    "activePositions": "एक्टिव पोजीशन",
+    "monthlyReturn": "मंथली रिटर्न",
+    "settingsModal": {
+      "title": "सेटिंग्स",
+      "subtitle": "अपनी डैशबोर्ड प्राथमिकताएँ कॉन्फ़िगर करें",
+      "close": "बंद करें",
+      "saving": "सहेजा जा रहा है…",
+      "save": "परिवर्तन सहेजें",
+      "cancel": "रद्द करें",
+      "tabs": {
+        "general": "सामान्य",
+        "hedging": "हेजिंग",
+        "alerts": "अलर्ट",
+        "privacy": "गोपनीयता"
+      },
+      "general": {
+        "display": "डिस्प्ले",
+        "darkMode": "डार्क मोड",
+        "darkModeDesc": "लाइट और डार्क थीम के बीच स्विच करें",
+        "compactView": "संक्षिप्त दृश्य",
+        "compactViewDesc": "कम जगह में अधिक डेटा दिखाएँ",
+        "wallet": "वॉलेट",
+        "walletDesc": "वॉलेट सेटिंग्स आपके कनेक्टेड वॉलेट प्रदाता (MetaMask, WalletConnect आदि) के माध्यम से प्रबंधित होती हैं।"
+      },
+      "hedging": {
+        "autoApproval": "स्वतः अनुमोदन",
+        "autoApprovalDesc": "सीमा से नीचे हेज को स्वचालित रूप से स्वीकृत करें",
+        "threshold": "सीमा: ${amount}",
+        "riskLimits": "जोखिम सीमाएँ",
+        "maxLeverage": "अधिकतम लीवरेज: {n}x",
+        "stopLoss": "डिफ़ॉल्ट स्टॉप-लॉस: {n}%",
+        "takeProfit": "डिफ़ॉल्ट टेक-प्रॉफिट: {n}%"
+      },
+      "alerts": {
+        "title": "अलर्ट प्राथमिकताएँ",
+        "price": "मूल्य अलर्ट",
+        "priceDesc": "महत्वपूर्ण मूल्य परिवर्तनों पर सूचनाएँ प्राप्त करें",
+        "hedge": "हेज अलर्ट",
+        "hedgeDesc": "हेज निष्पादन और परिसमापन के लिए सूचनाएँ",
+        "agent": "AI एजेंट अलर्ट",
+        "agentDesc": "AI एजेंटों से अपडेट और अनुशंसाएँ"
+      },
+      "privacy": {
+        "title": "गोपनीयता विशेषताएँ",
+        "private": "निजी मोड",
+        "privateDesc": "स्टेल्थ पतों के साथ लेनदेन विवरण छिपाएँ",
+        "zk": "ZK-STARK प्रमाण",
+        "zkDesc": "निपटान के लिए शून्य-ज्ञान प्रमाण उत्पन्न करें",
+        "protected": "आपकी गोपनीयता सुरक्षित है",
+        "protectedDesc": "सभी संवेदनशील डेटा एन्क्रिप्टेड है। ZK प्रमाण सुनिश्चित करते हैं कि आपकी पोजीशनें निजी बनी रहें और ऑन-चेन सत्यापित हों।"
+      }
+    }
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "confirm": "पुष्टि करें",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "close": "बंद करें",
+    "back": "वापस",
+    "next": "अगला",
+    "language": "भाषा"
+  },
+  "howItWorks": {
+    "title": "यह कैसे काम करता है",
+    "subtitle": "तीन सरल चरणों में शुरू करें",
+    "step1": {
+      "title": "कनेक्ट",
+      "description": "अपने वॉलेट को लिंक करें और प्राथमिकताएं सेट करें",
+      "detail": "Web3 वॉलेट एकीकरण"
+    },
+    "step2": {
+      "title": "मॉनिटर",
+      "description": "AI एजेंट 24/7 पोर्टफोलियो जोखिम का विश्लेषण करते हैं",
+      "detail": "रीयल-टाइम जोखिम विश्लेषण"
+    },
+    "step3": {
+      "title": "एक्जीक्यूट",
+      "description": "ऑटो-हेज और लेनदेन निपटान",
+      "detail": "स्वचालित सुरक्षा"
+    }
+  },
+  "zkProof": {
+    "title": "ZK प्रूफ जनरेटर",
+    "subtitle": "पोर्टफोलियो गोपनीयता के लिए जीरो-नॉलेज प्रूफ जेनरेट और वेरिफाई करें",
+    "selectScenario": "सिनेरियो चुनें",
+    "generateProof": "प्रूफ जेनरेट करें",
+    "verifyProof": "प्रूफ वेरिफाई करें",
+    "proofGenerated": "प्रूफ जेनरेट हुआ",
+    "proofVerified": "प्रूफ वेरिफाईड",
+    "proofFailed": "वेरिफिकेशन विफल",
+    "showSecrets": "सीक्रेट्स दिखाएं",
+    "hideSecrets": "सीक्रेट्स छुपाएं",
+    "scenarios": {
+      "portfolioRisk": "पोर्टफोलियो जोखिम मूल्यांकन",
+      "portfolioRiskDesc": "पोजीशन प्रकट किए बिना साबित करें कि पोर्टफोलियो जोखिम सीमा से नीचे है",
+      "settlementBatch": "सेटलमेंट बैच वैलिडेशन",
+      "settlementBatchDesc": "ट्रांजैक्शन विवरण प्रकट किए बिना साबित करें कि सेटलमेंट बैच वैध है",
+      "compliance": "नियामक अनुपालन",
+      "complianceDesc": "संवेदनशील डेटा उजागर किए बिना नियमों का अनुपालन साबित करें"
+    }
+  },
+  "zkAuthenticity": {
+    "title": "ZK-STARK प्रामाणिकता सत्यापन",
+    "subtitle": "हमारे जीरो-नॉलेज प्रूफ कार्यान्वयन की प्रामाणिकता सत्यापित करें",
+    "systemStatus": "सिस्टम स्थिति",
+    "operational": "संचालनशील",
+    "verifyProof": "प्रूफ वेरिफाई करें",
+    "pasteProof": "अपना प्रूफ JSON यहां पेस्ट करें",
+    "implementation": "कार्यान्वयन विवरण",
+    "cryptoParams": "क्रिप्टोग्राफिक पैरामीटर",
+    "sourceCode": "सोर्स कोड"
+  },
+  "zkVerification": {
+    "title": "ZK-STARK गणितीय प्रमाण",
+    "subtitle": "औपचारिक सत्यापन कि ZKward Ben-Sasson आदि की अकादमिक विशिष्टताओं के अनुसार एक सच्चा ZK-STARK लागू करता है",
+    "auditorSummary": "ऑडिटर क्विक सारांश",
+    "implementation": "कार्यान्वयन",
+    "securityLevel": "सुरक्षा स्तर",
+    "academicFoundation": "अकादमिक आधार"
+  },
+  "marketOpportunity": {
+    "title": "विशाल बाज़ार अवसर",
+    "subtitle": "Polymarket अल्फा + AI एजेंट + उपभोक्ता क्रिप्टो — सब एक साथ हो रहा है",
+    "polymarketVolume": "Polymarket वॉल्यूम",
+    "polymarketDescription": "मासिक रन-रेट (TRM Labs, 2026)",
+    "growthRate": "विकास दर",
+    "growthDescription": "2024-2030 बाज़ार विस्तार",
+    "targetMarket": "लक्ष्य बाज़ार",
+    "targetDescription": "क्रिप्टो-नेटिव रिटेल · DeFi उपयोगकर्ता · व्यक्तिगत पोर्टफोलियो धारक",
+    "potentialUsers": "संभावित उपयोगकर्ता",
+    "usersDescription": "Polymarket बेटर्स, AI एजेंट प्रशंसक, DeFi वॉल्ट उपयोगकर्ता, टोकनाइज्ड पोर्टफोलियो धारक"
+  },
+  "liveMetrics": {
+    "title": "लाइव प्लेटफॉर्म मेट्रिक्स",
+    "subtitle": "SUI Mainnet से लाइव प्रदर्शन डेटा",
+    "tvl": "कुल लॉक्ड वैल्यू",
+    "transactions": "लेनदेन",
+    "gasSavings": "गैस बचत",
+    "aiAgentsOnline": "AI एजेंट ऑनलाइन"
+  },
+  "roadmap": {
+    "title": "उत्पाद रोडमैप",
+    "subtitle": "भविष्यवाणी बाज़ार के अल्फा को सभी के लिए सुलभ बनाने का हमारा मार्ग",
+    "q1Title": "Q1 2026: आधार",
+    "q1Description": "मुख्य बुनियादी ढांचा बनाया — SUI स्मार्ट कॉन्ट्रैक्ट, 5-एजेंट प्रोटोटाइप, ZK पाइपलाइन",
+    "q2Title": "Q2 2026: मेननेट लॉन्च",
+    "q2Description": "CommunityPool और 7 AI ट्रेडिंग एजेंट (PriceMonitor + SuiPool जोड़े गए) SUI मेननेट पर लाइव",
+    "q3Title": "Q3 2026: विकास",
+    "q3Description": "संस्थागत साझेदारियों के साथ प्रोडक्शन लॉन्च",
+    "q4Title": "Q4 2026: स्केलिंग",
+    "q4Description": "मल्टी-चेन में $500M+ TVL"
+  },
+  "cookies": {
+    "title": "कुकी प्राथमिकताएं",
+    "description": "कुकीज़ आपके अनुभव को बेहतर बनाती हैं। आपका wallet address सार्वजनिक blockchain डेटा है — हम व्यक्तिगत जानकारी नहीं जुटाते।",
+    "privacyPolicy": "गोपनीयता नीति",
+    "customize": "कस्टमाइज़",
+    "necessaryOnly": "केवल आवश्यक",
+    "acceptAll": "सभी स्वीकार करें",
+    "settings": "कुकी सेटिंग्स",
+    "necessary": "आवश्यक",
+    "alwaysOn": "हमेशा चालू",
+    "necessaryDescription": "वॉलेट कनेक्शन और बुनियादी कार्यक्षमता के लिए आवश्यक",
+    "analytics": "एनालिटिक्स",
+    "analyticsDescription": "प्रदर्शन सुधार के लिए अनाम उपयोग डेटा",
+    "preferences": "प्राथमिकताएं",
+    "preferencesDescription": "आपकी सेटिंग्स और प्राथमिकताएं याद रखें",
+    "rejectOptional": "वैकल्पिक अस्वीकार करें",
+    "savePreferences": "प्राथमिकताएं सहेजें"
+  },
+  "landing": {
+    "status": {
+      "liveOn": "Live on",
+      "hederaTestnet": "Hedera Testnet",
+      "suiMainnet": "SUI Mainnet",
+      "member": "member",
+      "members": "members"
+    },
+    "hero": {
+      "headline1": "20 signal sources.",
+      "headline2": "Ranked by track record.",
+      "subtitle": "Every prediction market, every funding rate, every on-chain signal — scored against real outcomes. Autonomous execution when the winners align."
+    },
+    "stats": {
+      "eyebrow": "Right now, in production",
+      "sources": {
+        "value": "20+",
+        "label": "signal sources fused per asset"
+      },
+      "accuracy": {
+        "value": "82.8%",
+        "label": "AI resolved accuracy on prediction market titles"
+      },
+      "mature": {
+        "value": "37",
+        "label": "sources with mature track records"
+      }
+    },
+    "cta": {
+      "depositUsdc": "See live signals",
+      "howItWorks": "How it works",
+      "viewSource": "View source",
+      "installApp": "Install app",
+      "installIosHint": "To install: tap the Share icon in Safari, scroll down, and tap \"Add to Home Screen\"."
+    },
+    "composition": {
+      "eyebrow": "Live signal",
+      "title": "What the aggregator says right now.",
+      "body": "20 sources fused per asset across BTC, ETH, SUI. Refreshes every 30 seconds."
+    },
+    "howItWorks": {
+      "eyebrow": "The loop",
+      "title": "Aggregate. Score. Execute.",
+      "body": "Runs every five minutes. All day. Without you.",
+      "step1": {
+        "title": "Fuse 20 sources per asset",
+        "body": "Polymarket, Kalshi, Delphi, Manifold, funding rates, orderbook depth, options skew, cross-asset correlation. Every tick, every asset."
+      },
+      "step2": {
+        "title": "Score each source against real outcomes",
+        "body": "Bayesian-shrunk hit rate per source. Auto-kill below 40%. Weights winners up to 2×, killed sources drop to 0.05×."
+      },
+      "step3": {
+        "title": "Execute when winners align",
+        "body": "Multi-agent safety guard. Adaptive stops. Every trade STARK-attested and written on-chain. Verifiable. Unfakeable."
+      }
+    },
+    "trust": {
+      "title": "Signal integrity, enforced by the code.",
+      "body": "Not a policy on our website. The pipeline itself refuses bad signals, bad venues, and stale data.",
+      "poolCap": {
+        "title": "Sources tracked",
+        "value": "111",
+        "hint": "Every source's hit rate accumulates against real outcomes."
+      },
+      "freshOracle": {
+        "title": "Signal freshness",
+        "value": "30s max",
+        "hint": "Aggregator refresh cadence per asset."
+      },
+      "withdrawThrottle": {
+        "title": "Auto-kill floor",
+        "value": "40%",
+        "hint": "Sources below this hit rate drop to 0.05× weight."
+      },
+      "proofs": {
+        "title": "Every trade attested",
+        "value": "Post-quantum",
+        "hint": "STARK on the Goldilocks field. 180-bit soundness."
+      },
+      "twoChains": {
+        "title": "Multi-venue execution",
+        "value": "SUI + EVM",
+        "hint": "Signal is chain-agnostic. Execution routes to the deepest venue."
+      }
+    },
+    "surfaces": {
+      "eyebrow": "Look around",
+      "title": "Every layer of ZKward is public.",
+      "body": "Signals, sources, trades, proofs. Nothing behind a login except your wallet.",
+      "dashboard": {
+        "eyebrow": "Dashboard",
+        "title": "Live capital, one screen.",
+        "body": "Balance, hedges, drawdown, proofs. Refreshed every minute."
+      },
+      "whitepaper": {
+        "eyebrow": "Whitepaper",
+        "title": "The technical version.",
+        "body": "20-source signal fusion, per-source calibration, AI-graded prediction market interpretation, STARK-attested execution."
+      },
+      "paper": {
+        "eyebrow": "Shadow trader",
+        "title": "$100K notional, full stack, public receipts.",
+        "body": "The same signals + agents + execution stack running against a live $100K paper book. Verify PnL before you fund anything."
+      }
+    },
+    "finalCta": {
+      "title": "See the signal stack running.",
+      "body": "Every source, every hit rate, every trade — public. Connect a wallet to deposit into the live demo vault.",
+      "alreadyIn": "{count} already in.",
+      "paused": "Deposits paused for maintenance."
+    },
+    "production": {
+      "eyebrow": "In production",
+      "title": "Live on Sui mainnet since 2026-06-12.",
+      "body": "A public track record measured on-chain, not in press releases.",
+      "daysLive": {
+        "title": "Days live",
+        "value": "100+",
+        "hint": "Continuous, no restarts. Contract-enforced $10K TVL cap."
+      },
+      "navSnapshots": {
+        "title": "NAV snapshots",
+        "value": "2,200+",
+        "hint": "Written on-chain every 15 minutes since inception."
+      },
+      "hedges": {
+        "title": "Hedges executed",
+        "value": "214",
+        "hint": "Lifetime, across BTC, ETH, SUI, SOL perps."
+      }
+    },
+    "builtFor": {
+      "eyebrow": "Built for",
+      "title": "Traders, researchers, and protocols.",
+      "body": "One signal pipeline, three audiences.",
+      "traders": {
+        "title": "Traders",
+        "body": "Signal quality that survives regime changes. Auto-kill for underperforming sources. Aggregator refreshes every 30 seconds."
+      },
+      "research": {
+        "title": "Research desks",
+        "body": "Every source hit rate is public. Historical calibration accessible via API. Reproducible from raw data."
+      },
+      "protocols": {
+        "title": "Protocols",
+        "body": "Autonomous execution with STARK-attested proofs. Multi-agent consensus. Contract-enforced TVL caps."
+      }
+    },
+    "startHere": {
+      "eyebrow": "Start here",
+      "body": "Three ways to try the platform. No wallet required to explore.",
+      "watchShadow": {
+        "title": "Watch the shadow trader",
+        "body": "$100K live demo running the full stack. Public receipts.",
+        "cta": "Open shadow trader"
+      },
+      "seeSignals": {
+        "title": "Read live signals",
+        "body": "Per-asset aggregator output, refreshed every 30 seconds.",
+        "cta": "Open dashboard"
+      },
+      "tryDemo": {
+        "title": "Deposit into the demo vault",
+        "body": "$10K contract-capped. Withdraw anytime.",
+        "cta": "Open vault"
+      }
+    }
+  },
+  "agentsPage": {
+    "meta": {
+      "title": "सात एजेंट — ZKward",
+      "description": "सात विशेषज्ञ जो असली पैसा हिलने से पहले आपस में बहस करते हैं। लाइव चैट, केवल पढ़ने के लिए।"
+    },
+    "header": {
+      "badge": "सात एजेंट, लाइव, केवल पढ़ने",
+      "title": "ZKward से पूछें।",
+      "subtitle": "क्रिप्टो, बाज़ार, वॉल्ट। हर जवाब लाइव डेटा पर चलता है — कीमतें, प्रेडिक्शन सिग्नल, on-chain स्थिति। कुछ भी रिहर्स्ड नहीं।"
+    },
+    "meetTheCrew": "टीम से मिलें",
+    "architecture": "आर्किटेक्चर",
+    "architectureBody": "सभी एजेंट केंद्रीय <bus>MessageBus</bus> से बात करते हैं और साझा <base>BaseAgent</base> का विस्तार करते हैं। हर चिंता एक फ़ाइल में रहती है। कोई globals के ज़रिए स्थिति साझा नहीं करता।",
+    "agents": {
+      "lead": {
+        "name": "Lead",
+        "role": "डिस्पैचर",
+        "description": "आपकी बात पढ़ता है, विशेषज्ञ चुनता है, जवाब को एक टुकड़े में सिल देता है।",
+        "capabilities": {
+          "c1": "प्राकृतिक भाषा intent पार्सिंग",
+          "c2": "सही विशेषज्ञ को रूट",
+          "c3": "परिणामों को एक उत्तर में मर्ज",
+          "c4": "बहु-एजेंट कॉल का समन्वय"
+        }
+      },
+      "risk": {
+        "name": "Risk",
+        "role": "चिंताग्रस्त",
+        "description": "पूल एक्सपोज़र ट्रैक करता है। liquidation के पास पोज़िशन चिह्नित करता है। पोर्टफ़ोलियो स्वास्थ्य को स्कोर करता है।",
+        "capabilities": {
+          "c1": "Value at Risk (VaR) गणना",
+          "c2": "Volatility और Sharpe ratio",
+          "c3": "प्रति पोज़िशन liquidation दूरी",
+          "c4": "पोर्टफ़ोलियो स्वास्थ्य स्कोर, 0 से 100"
+        }
+      },
+      "hedging": {
+        "name": "Hedging",
+        "role": "बीमा दलाल",
+        "description": "Risk कुछ चिह्नित करते ही जवाबी ट्रेड चुनता है। खुलने से पहले साइज़, लीवरेज और ऐसेट सबको confidence स्कोर मिलता है।",
+        "capabilities": {
+          "c1": "शॉर्ट पोज़िशन साइज़िंग",
+          "c2": "Options strategy निर्माण",
+          "c3": "Cross-asset correlation विश्लेषण",
+          "c4": "हर strategy पर confidence score टैग"
+        }
+      },
+      "settlement": {
+        "name": "Settlement",
+        "role": "नोटरी",
+        "description": "फ़ैसलों को on-chain ट्रांज़ैक्शन में बदलता है। गैस बचाने के लिए बैच करता है, ZK प्रमाण बनाता है, विफलता पर वापस लौटाता है।",
+        "capabilities": {
+          "c1": "Batch transaction प्रोसेसिंग",
+          "c2": "Gas optimization, आमतौर पर 20 से 40 प्रतिशत",
+          "c3": "ZK-STARK proof समन्वय",
+          "c4": "असफलता पर rollback और retry"
+        }
+      },
+      "reporting": {
+        "name": "Reporting",
+        "role": "बहीखाता वाला",
+        "description": "हर दिन, सप्ताह और महीने का साफ़-सुथरा रिकॉर्ड लिखता है। ज़रूरत पर ऑडिट ट्रेल भी।",
+        "capabilities": {
+          "c1": "दैनिक, साप्ताहिक, मासिक रिपोर्ट",
+          "c2": "प्रदर्शन और P&L ट्रैकिंग",
+          "c3": "शीर्ष पोज़िशन विश्लेषण",
+          "c4": "ऐतिहासिक रुझान पहचान"
+        }
+      },
+      "priceMonitor": {
+        "name": "Price Monitor",
+        "role": "पहरेदार",
+        "description": "हर 5 मिनट में BTC, ETH, SUI, CRO का प्रेडिक्शन टिकर देखता है। सिग्नल पलटने पर सेकंडों में प्रसारण करता है।",
+        "capabilities": {
+          "c1": "BTC, ETH, SUI, CRO threshold निगरानी",
+          "c2": "Polymarket ५-मिनट इवेंट स्ट्रीम",
+          "c3": "सिग्नल flip पर सक्रिय",
+          "c4": "प्रति-asset alert routing"
+        }
+      },
+      "suiPool": {
+        "name": "SUI Pool",
+        "role": "ऑपरेटर",
+        "description": "SUI USDC पूल चलाता है। फ़्यूज़्ड सिग्नल पढ़ता है, चार-ऐसेट एलोकेशन चुनता है, BlueFin के ज़रिए रीबैलेंस करता है। on-chain गार्ड्स को कभी बाइपास नहीं करता।",
+        "capabilities": {
+          "c1": "BTC, ETH, SUI, CRO पर चार-asset allocation",
+          "c2": "BlueFin एग्रीगेटर रीबैलेंस",
+          "c3": "SafeExecutionGuard प्रवर्तन",
+          "c4": "केवल तब rebalance जब AI confidence 65 प्रतिशत पार करे"
+        }
+      }
+    },
+    "chat": {
+      "title": "क्रिप्टो, बाज़ार या वॉल्ट के बारे में पूछें",
+      "readOnly": "केवल पढ़ने के लिए",
+      "subtitle": "लाइव कीमतें। लाइव सिग्नल। लाइव वॉल्ट स्थिति।",
+      "tryOneOfThese": "इनमें से एक आज़माएँ:",
+      "thinking": "सोच रहा है…",
+      "placeholder": "बाज़ार या वॉल्ट के बारे में सवाल पूछें…",
+      "send": "पूछें",
+      "sending": "भेजा जा रहा है",
+      "sendAria": "भेजें",
+      "rateLimited": "दर सीमा तक पहुँच गए। ~30 सेकंड बाद फिर पूछें।",
+      "requestFailed": "अनुरोध विफल (HTTP {status}).",
+      "networkError": "नेटवर्क त्रुटि",
+      "toolCalls": "{count, plural, =1 {# टूल कॉल} other {# टूल कॉल्स}}",
+      "notConfigured": "स्टेटस ओरेकल कॉन्फ़िगर नहीं है (prod में ASI_API_KEY की प्रतीक्षा है).",
+      "prompts": {
+        "p1": "BTC अभी कैसा है?",
+        "p2": "मार्केट स्नैपशॉट — BTC, ETH, SOL, SUI",
+        "p3": "ETH के बारे में प्रेडिक्शन मार्केट क्या सोचता है?",
+        "p4": "फंडिंग रेट्स को दो वाक्यों में समझाइए",
+        "p5": "पिछले 24 घंटे में हमारे वॉल्ट ने क्या किया?",
+        "p6": "क्या हमारा AI इस हफ़्ते सही अनुमान लगा रहा है?"
+      },
+      "clear": "Clear",
+      "clearHistory": "Clear conversation",
+      "newChat": "New Chat",
+      "newChatTooltip": "Start a fresh conversation (resets memory)",
+      "emptyResponse": "कोई प्रतिक्रिया नहीं मिली — सेवा अपडेट हो रही हो सकती है। कृपया पुनः प्रयास करें।"
+    }
+  },
+  "story": {
+    "meta": {
+      "title": "हमारी कहानी — ZKward",
+      "description": "ZKward कैसे शुरू हुआ, क्या करता है, और क्यों जब पैसा गँवाता है तो हम बताते हैं।"
+    },
+    "header": {
+      "eyebrow": "हमारी कहानी",
+      "title": "हम यहाँ कैसे पहुँचे",
+      "subtitle": "पाँच मिनट। कोई शब्दजाल नहीं। एक कॉफ़ी उठा लीजिए।"
+    },
+    "intro": "यह प्रोजेक्ट पहले <em>ZkVanguard</em> कहलाता था। लोग बार-बार पूछते थे कि क्या हम bond fund हैं। यह आपके पिता की रिटायरमेंट योजना जैसा लगता था। इसलिए हमने इसका नाम बदलकर <strong>ZKward</strong> कर दिया। वही विचार, बोलने में थोड़ा अजीब। आदत पड़ जाएगी।",
+    "whatItIs": {
+      "heading": "एक वाक्य में यह क्या है",
+      "body": "एक बचत पूल जो आपके लिए ट्रेड करता है और अपना गणित दिखाता है, ताकि आपको हमारी बात पर आँख मूँदकर भरोसा न करना पड़े।"
+    },
+    "howItWorks": {
+      "heading": "सरल शब्दों में यह कैसे काम करता है",
+      "body1": "आप USDC डालते हैं। कंप्यूटर प्रोग्रामों की एक छोटी टीम पढ़ती है कि लोग prediction markets (जैसे Polymarket) पर किस पर दांव लगा रहे हैं और उसी के आधार पर crypto में ट्रेड लगाती है। जब ट्रेड होता है, तो एक छोटी क्रिप्टोग्राफ़िक रसीद भी बनती है जिसे कोई भी जाँच सकता है। रसीद प्रमाणित करती है कि ट्रेड ने नियम माने। आपकी पोज़िशन उजागर किए बिना।",
+      "body2": "इसे black box flight recorder वाले autopilot की तरह सोचें। बस recorder सार्वजनिक है, और autopilot खराब मौसम में उड़ान नहीं भरता।"
+    },
+    "whereStarted": {
+      "heading": "कहाँ शुरू हुआ",
+      "body1": "एक hackathon वीकेंड। बहुत ज़्यादा कॉफ़ी। एक सवाल: <em>अगर कंप्यूटर असली पैसा हिलाते हैं, तो कोई उनकी तर्कशीलता पर क्यों भरोसा करेगा?</em> हम सोच रहे थे दो दिन में जवाब देंगे। अठारह महीने लग गए।",
+      "body2": "रास्ते में हमने पाँच hackathons जीते, Tether के wallet toolkit में योगदान दिया, और मुट्ठी भर blockchains पर deploy किया। ज़्यादातर टेस्ट deployments दोपहर भर टिके। <strong>SUI</strong> टिकी रही। तेज़, सस्ती, और तिरछा देखने पर टूटती नहीं। अभी पैसा वहीं रहता है।"
+    },
+    "shipToday": {
+      "heading": "आज हम क्या भेजते हैं",
+      "item1": "SUI mainnet पर एक असली पूल। जानबूझकर छोटा। कॉन्ट्रैक्ट खुद ही जमा को $10,000 पर सीमित करता है। हम स्केल करने से पहले साबित करना चाहते थे कि यह काम करता है। धीमा होना ही मक़सद है।",
+      "item2": "आठ सुरक्षा स्विच जो कुछ भी अजीब दिखे तो पूरी चीज़ रोक सकते हैं। कल कठिन टेस्ट दिन के बाद एक trip हुआ (नीचे और भी)।",
+      "item3": "एक सीखने का लूप: AI अपने ट्रेड्स को खुद स्कोर करता है, रात भर पुनः प्रशिक्षित होता है, और फिर से कोशिश करता है। कभी बेहतर होता है। कभी नए तरीके से असफल होता है। हम दोनों प्रकाशित करते हैं।",
+      "item4": "हर ट्रेड के लिए क्रिप्टोग्राफ़िक रसीद। स्क्रीनशॉट नहीं। प्रमाण।"
+    },
+    "whyWeTell": {
+      "heading": "जब हारता है तो हम क्यों बताते हैं",
+      "body1": "अधिकांश प्रोजेक्ट सिर्फ़ अपनी जीत की बात करते हैं। अभी, हमारा टेस्ट trader कागज़ पर लगभग $68,000 नीचे है। हम बता रहे हैं क्योंकि यही तो पूरा मक़सद है। यदि आप हानि नहीं देख सकते, तो जीत का मतलब कम रह जाता है।",
+      "body2": "और, हानि छिपाना ही है जिससे छोटी हानि तीन महीने बाद बहुत बड़ी बन जाती है। एक बार कोशिश की थी। सिफ़ारिश नहीं करते।"
+    },
+    "whoBuilds": {
+      "heading": "कौन बना रहा है",
+      "body1": "ज़्यादातर एक व्यक्ति, आप में से अधिकांश से नौ time zones दूर काम करते हुए। कंप्यूटर विज्ञान की डिग्री, बड़ी कंपनियों में कुछ साल, और असंख्य side quests। बचत और छोटे अनुदानों से funded जो लगभग तभी pay करते हैं जब founder खाना छोड़ने लगता है।",
+      "body2": "Paper trader ने कभी-कभी प्रति माह founder की खाने की लागत से अधिक ख़र्च किया है। हम इसे on-brand मानते हैं।"
+    },
+    "next": {
+      "heading": "आगे कहाँ जाता है",
+      "body": "दो चीज़ें होनी चाहिए। पहले, यह साबित करना कि trader टेस्ट पूल में पैसे गँवाना बंद करता है। फिर deposit cap बढ़ाना, एक-एक सावधान क़दम, हर क़दम पर असली drawdown परीक्षण के साथ। अगर हम कोई क़दम छोड़ें, तो कृपया <telegram>Telegram</telegram> पर हम पर चिल्लाइए।"
+    },
+    "footer": {
+      "technical": "टेक्निकल संस्करण चाहिए? <link>Whitepaper पढ़ें</link>",
+      "readWhitepaper": "Whitepaper पढ़ें",
+      "orJust": "या बस <link>ऐप खोलें</link>।",
+      "openApp": "ऐप खोलें"
+    }
+  },
+  "faq": {
+    "meta": {
+      "title": "FAQ — ZKward",
+      "description": "ZKward क्या है, कैसे काम करता है, आपके पैसे का क्या होता है, और paper trader फ़िलहाल घाटे में क्यों है।"
+    },
+    "header": {
+      "eyebrow": "FAQ",
+      "title": "सामान्य प्रश्न",
+      "subtitle": "छोटे उत्तर। अगर आपका नहीं है, तो <email>ashish.regmi@zkward.com</email> पर ईमेल करें और हम जोड़ देंगे।"
+    },
+    "q1": {
+      "q": "ZKward क्या है?",
+      "a": "ZKward एक स्वायत्त क्रिप्टो वॉल्ट है। आप USDC जमा करते हैं। सात AI एजेंट prediction markets, funding rates और कीमत momentum पढ़ते हैं, फिर BTC, ETH और SUI में ट्रेड करते हैं। हर हेज निर्णय एक क्रिप्टोग्राफ़िक प्रमाण के साथ बंद होता है जिसे कोई भी on-chain सत्यापित कर सकता है।"
+    },
+    "q2": {
+      "q": "क्या ZKward एक hedge fund है?",
+      "a": "नहीं। Hedge fund एक विशिष्ट नियमित क़ानूनी संरचना है। ZKward एक on-chain वॉल्ट है — non-custodial, permissionless, कोई accreditation नहीं, on-chain fee accounting, open-source strategy। समान directional खेल, लेकिन तिमाही पत्रों की जगह सार्वजनिक प्रमाणों के साथ।"
+    },
+    "q3": {
+      "q": "मैं कितना जमा कर सकता हूँ?",
+      "a": "कुल $10,000, operational-proof चरण के दौरान Move कॉन्ट्रैक्ट द्वारा capped। on-chain लागू — हमारे सहित कोई भी बिना governance action इसे नहीं बढ़ा सकता। हर चरण असली drawdown परीक्षण से बचने पर cap क़दम-दर-क़दम बढ़ती है।"
+    },
+    "q4": {
+      "q": "मेरे फ़ंड कहाँ रखे जाते हैं?",
+      "a": "पूल कॉन्ट्रैक्ट द्वारा नियंत्रित SUI Move object में। Non-custodial — आपकी keys आपके पास ही रहती हैं। निकासी permissionless है और किसी भी समय उपलब्ध है, draining हमलों को रोकने के लिए on-chain लागू 25% प्रति दिन प्रति अकाउंट throttle के साथ।"
+    },
+    "q5": {
+      "q": "STARK proof क्या है और मुझे इसकी चिंता क्यों करनी चाहिए?",
+      "a": "STARK proof एक गणितीय रसीद है जो किसी को भी बिना निजी inputs देखे यह सत्यापित करने देती है कि कोई गणना सही ढंग से हुई। जब ZKward हेज खोलता या बंद करता है, तो वह चेन पर STARK प्रमाण लिखता है साबित करते हुए कि ट्रेड ने वॉल्ट नियमों (asset caps, leverage caps, size limits) का पालन किया। कोई black box नहीं। कोई \"हम पर भरोसा करें\" नहीं।"
+    },
+    "q6": {
+      "q": "ZKward किन चेनों पर चलता है?",
+      "a": "SUI mainnet प्रमुख चेन है (package 0x107292…7b726 पर लाइव पूल)। संदर्भ deployments Hedera Testnet, Sepolia, Cronos EVM, Oasis Sapphire और Arbitrum Sepolia पर मौजूद हैं। पोर्टेबिलिटी सिद्ध है; production वहाँ बढ़ता है जहाँ माँग उचित ठहराती है।"
+    },
+    "q7": {
+      "q": "फ़ीस कितनी है?",
+      "a": "50 basis points वार्षिक प्रबंधन और realised profits पर 10% प्रदर्शन। fees MSafe multisig-held FeeManagerCap से रूट होती हैं, operational AdminCap से अलग। admin key समझौते से fee path कब्जाया नहीं जा सकता।"
+    },
+    "q8": {
+      "q": "Paper trader अभी पैसा क्यों गँवा रहा है?",
+      "a": "सार्वजनिक पारदर्शिता। हम असली सिग्नल के विरुद्ध paper trader चलाते हैं और हर ट्रेड प्रकाशित करते हैं — जीत और हार। संचयी paper PnL लगभग -$68,000 पर है जबकि हम नया gate system (volatility filter, streak guard, trend alignment, signal-quality) ट्यून कर रहे हैं। यदि हम हानि छिपाते, तो जीत का कुछ मतलब नहीं होता।"
+    },
+    "q9": {
+      "q": "मैं कैसे जानूँ कि AI बना नहीं रहा?",
+      "a": "पूँजी हिलाने वाला हर निर्णय SUI चेन पर एक STARK proof emit करता है। proof निर्णय को on-chain invariants (asset caps, leverage caps, size) से बाँधता है। कोई भी on-chain verifier से जाँच सकता है। $100K से कम ट्रेड 5-सेकंड cooldown, 30-bps slippage ceiling और अधिकतम-3-concurrent breaker से भी गुज़रते हैं। $100K से ऊपर के ट्रेडों को एजेंट quorum से 2-में-3 वोट चाहिए।"
+    },
+    "q10": {
+      "q": "क्या ZKward क्वांटम कंप्यूटरों के विरुद्ध सुरक्षित है?",
+      "a": "STARK proof system पारदर्शी है (कोई trusted setup नहीं) और केवल SHA-256 Merkle trees और Goldilocks prime field का उपयोग करता है। कोई elliptic curves नहीं, कोई discrete-log नहीं, कोई pairings नहीं। RSA और ECDSA को तोड़ने वाला Shor का algorithm यहाँ ख़तरा नहीं है। प्रभावी soundness 180 बिट है, NIST post-quantum Level 1 से 52 बिट ऊपर।"
+    },
+    "q11": {
+      "q": "क्या मैं कभी भी निकाल सकता हूँ?",
+      "a": "हाँ। निकासी permissionless है। आप एक transaction sign करते हैं, कॉन्ट्रैक्ट पूल NAV में आपका हिस्सा गणना करता है, फ़ंड आपके wallet में लौट आते हैं। दबाव में draining रोकने के लिए कॉन्ट्रैक्ट प्रति अकाउंट 25% प्रति दिन throttle लागू करता है। कोई lockup नहीं, कोई notice period नहीं, कोई manager approval नहीं।"
+    },
+    "q12": {
+      "q": "मैं टीम से संपर्क कैसे करूँ?",
+      "a": "ashish.regmi@zkward.com पर ईमेल करें या हमारे Telegram में शामिल हों (footer में link)। तकनीकी प्रश्नों के लिए GitHub issues भी काम करते हैं।"
+    },
+    "footer": {
+      "technical": "पूर्ण तकनीकी संस्करण चाहिए? <link>Whitepaper पढ़ें</link>",
+      "readWhitepaper": "Whitepaper पढ़ें",
+      "orRead": "या <link>हमारी कहानी</link> पढ़ें।",
+      "ourStory": "हमारी कहानी"
+    }
+  },
+  "whitepaperMeta": {
+    "title": "Whitepaper",
+    "description": "पूर्ण ZKward thesis: prediction-market alpha, 7-एजेंट आर्किटेक्चर, STARK-प्रमाणित निष्पादन, tokenomics, roadmap।"
+  },
+  "legacyBanner": {
+    "message": "<strong>zkward.xyz बंद हो रहा है</strong> — अब हम <link>zkward.com</link> पर हैं।",
+    "dismiss": "बंद करें"
+  }
+}

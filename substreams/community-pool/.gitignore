@@ -1,0 +1,6 @@
+/target
+/Cargo.lock
+src/pb/*.rs
+!src/pb/mod.rs
+/*.spkg
+!dist/*.spkg
